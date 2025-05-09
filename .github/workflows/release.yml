@@ -43,25 +43,22 @@ jobs:
   #             --generate-notes $OPTIONS
 
   build:
-    name: Build on ${{ matrix.name }}
+    name: Build on ${{ matrix.container || matrix.name }}
     runs-on: ${{ matrix.os }}
     #needs: [release]
-    container:
-      image: ${{ matrix.container.image }}
-      options: --user root
+    container: ${{ matrix.container && fromJSON(format('{"image":"%s","options":"--user root"}', matrix.container.image)) || null }}
     strategy:
-      #fail-fast: false
       matrix:
         include:
-          # - os: [ubuntu-24.04]
-          #   target: Linux
-          #   name: ubuntu24
-          #   flavour: debian
+          - os: [ubuntu-24.04]
+            target: Linux
+            name: ubuntu24
+            flavour: debian
 
-          # - os: [ubuntu-22.04]
-          #   target: Linux
-          #   name: ubuntu22
-          #   flavour: debian
+          - os: [ubuntu-22.04]
+            target: Linux
+            name: ubuntu22
+            flavour: debian
 
           - os: [ubuntu-22.04]
             target: Linux
@@ -70,20 +67,35 @@ jobs:
             container:
               image: rockylinux:9
 
+          - os: [ubuntu-22.04]
+            target: Linux
+            name: debian11
+            flavour: debian
+            container:
+              image: debian:11
+
+          - os: [ubuntu-22.04]
+            target: Linux
+            name: debian12
+            flavour: debian
+            container:
+              image: debian:12
+
           # X86
-          # - os: macos-13
-          #   target: Macos
-          #   flavour: mac
+          - os: macos-13
+            target: Macos
+            flavour: mac
+            name: Macos13
 
-          # - os: macos-14
-          #   target: Macos
-          #   flavour: mac
-          #   name: Macos14
+          - os: macos-14
+            target: Macos
+            flavour: mac
+            name: Macos14
 
-          # - os: [self-hosted, Windows]
-          #   target: Windows
-          #   flavour: windows
-          #   name: Windows
+          - os: [self-hosted, Windows]
+            target: Windows
+            flavour: windows
+            name: Windows
 
     steps:
       - name: Checkout Repository
@@ -144,14 +156,14 @@ jobs:
         run: |
           if [ "${{ matrix.flavour }}" == "debian" ]; then
             sudo apt-get update
-            sudo apt-get install -y build-essential libev-dev make libc6-dev
+            sudo apt-get install -y build-essential libev-dev make libc6-dev rubygems
           elif [ "${{ matrix.flavour }}" == "redhat" ]; then
             cat /etc/os-release
             if ! command -v dnf &> /dev/null; then
               echo "Installing dnf..."
               microdnf install -y dnf
             fi
-            dnf install -y gcc make libev-devel python3.11-pip python3.11-setuptools python3.11-devel glibc-devel
+            dnf install -y gcc make libev-devel python3.11-pip python3.11-setuptools python3.11-devel glibc-devel rubygems
           fi
           python3 -m venv venv
           source venv/bin/activate
