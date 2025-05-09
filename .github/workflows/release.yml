@@ -87,9 +87,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Get versions
-        if: ${{ github.ref_name != 'develop' }}
+        if: ${{ github.ref_name != 'develop' && matrix.target != 'Windows' }}
         run: |
           echo "VERSION=$(echo $GITHUB_REF_NAME | sed 's/v//')" >> $GITHUB_ENV
+
+      - name: Get versions (Windows)
+        if: ${{ github.ref_name != 'develop' && matrix.target == 'Windows' }}
+        run: |
+          $VERSION = $env:GITHUB_REF_NAME -replace '^v', ''
+          echo "VERSION=$VERSION" >> $env:GITHUB_ENV
+        shell: pwsh
 
       - name: Setup Python v3.11
         uses: actions/setup-python@v5
