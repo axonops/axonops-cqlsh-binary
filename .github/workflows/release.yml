@@ -5,7 +5,7 @@ on:
     tags:
       - 'v*'
     branches:
-      - develop
+      - developgi
 
 defaults:
   run:
@@ -72,7 +72,7 @@ jobs:
           echo "VERSION=$VERSION"
 
       - name: Compile and build (Ubuntu/Debian)
-        if: ${{ contains(matrix.os, 'ubuntu') || contains(matrix.os, 'debian') }}
+        #if: ${{ contains(matrix.os, 'ubuntu') || contains(matrix.os, 'debian') }}
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential libev-dev make libc6-dev ruby-rubygems
@@ -85,7 +85,7 @@ jobs:
       - name: Create package
         if: ${{ matrix.target == 'Linux' }}
         run: |
-          gem install --no-document fpm
+          sudo gem install --no-document fpm
           ./package.sh ${VERSION}
 
 # code language: yaml
