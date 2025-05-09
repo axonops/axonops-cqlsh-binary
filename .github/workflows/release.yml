@@ -137,6 +137,10 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y build-essential libev-dev make libc6-dev
           elif [ "${{ matrix.flavour }}" == "redhat" ]; then
+            if ! command -v dnf &> /dev/null; then
+              echo "Installing dnf..."
+              microdnf install -y dnf
+            fi
             /usr/bin/dnf install -y gcc make libev-devel python3.11-pip python3.11-setuptools python3.11-devel glibc-devel
           fi
           python3 -m venv venv
