@@ -164,7 +164,7 @@ jobs:
             fi
             $SUDO apt-get update
             $SUDO apt-get install -y build-essential libev-dev make libc6-dev rubygems
-            [[ "${{ matrix.name }}" == "debian1"* ]] && $SUDO apt-get install -y python3.11 python3.11-venv python3.11-dev python3-pip
+            [[ "${{ matrix.name }}" == "debian1"* ]] && $SUDO apt-get install -y python3.11 python3.11-venv python3.11-dev python3.11-pip
           elif [ "${{ matrix.flavour }}" == "redhat" ]; then
             if ! command -v dnf &> /dev/null; then
               echo "Installing dnf..."
@@ -172,7 +172,6 @@ jobs:
             fi
             dnf install -y gcc make libev-devel python3.11-pip python3.11-setuptools python3.11-devel glibc-devel rubygems
           fi
-
           if command -v python3.11 &> /dev/null; then
             PYTHON=$(command -v python3.11)
             PIP=$(command -v pip3.11)
@@ -189,13 +188,13 @@ jobs:
 
           $PYTHON -m venv venv
           source venv/bin/activate
-          $PYTHON -m ensurepip
+          python3 -m ensurepip
 
-          [ "${{ matrix.flavour }}" == "readht" ] && $PIP install setuptools
-          $PIP install cython
+          [ "${{ matrix.flavour }}" == "readht" ] && pip3 install setuptools
+          pip3 install cython
 
           ./configure
-          make -j4 PYTHON_CMD="$PYTHON" PYTHON_PIP="$PIP"
+          make -j4
 
       - name: Compile and build (Windows)
         if: ${{ matrix.target == 'Windows' }}
