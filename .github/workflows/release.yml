@@ -65,7 +65,7 @@ jobs:
             name: rocky9
             flavour: redhat
             container:
-              image: rockylinux/rockylinux:9
+              image: rockylinux:9
 
           # X86
           # - os: macos-13
@@ -141,7 +141,7 @@ jobs:
               echo "Installing dnf..."
               microdnf install -y dnf
             fi
-            /usr/bin/dnf install -y gcc make libev-devel python3.11-pip python3.11-setuptools python3.11-devel glibc-devel
+            dnf install -y gcc make libev-devel python3.11-pip python3.11-setuptools python3.11-devel glibc-devel
           fi
           python3 -m venv venv
           source venv/bin/activate
