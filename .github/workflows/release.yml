@@ -171,16 +171,18 @@ jobs:
             fi
             dnf install -y gcc make libev-devel python3.11-pip python3.11-setuptools python3.11-devel glibc-devel rubygems
           fi
-          if [ -x /usr/bin/python3 ]; then
-            PYTHON=/usr/bin/python3
+
+          if command -v python &> /dev/null; then
+            PYTHON=$(command -v python)
+            PIP=$(command -v pip)
+          elif command -v python3 &> /dev/null; then
+            PYTHON=$(command -v python3)
+            PIP=$(command -v pip3)
           else
-            PYTHON=/usr/bin/python
+            echo "Python not found"
+            exit 1
           fi
-          if [ -x /usr/bin/pip3 ]; then
-            PIP=/usr/bin/pip3
-          else
-            PIP=/usr/bin/pip
-          fi
+
           $PYTHON -m venv venv
           source venv/bin/activate
           $PYTHON -m ensurepip
