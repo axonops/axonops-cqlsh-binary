@@ -74,6 +74,7 @@ jobs:
           - os: windows-latest
             target: Windows
             flavour: windows
+            name: Windows
             runs-on: [self-hosted]
 
     steps:
