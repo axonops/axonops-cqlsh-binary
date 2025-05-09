@@ -84,7 +84,7 @@ jobs:
         run: |
           echo "VERSION=$(echo $GITHUB_REF_NAME | sed 's/v//')" >> $GITHUB_ENV
           echo "VERSION=$VERSION"
-          cat /etc/os-release
+          [ -f /etc/os-release ] && cat /etc/os-release
 
       - name: Setup Python v3.11
         uses: actions/setup-python@v5
