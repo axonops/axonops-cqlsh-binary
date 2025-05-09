@@ -81,6 +81,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Get versions
+        if: ${{ github.ref_name != 'develop' }}
         run: |
           echo "VERSION=$(echo $GITHUB_REF_NAME | sed 's/v//')" >> $GITHUB_ENV
           echo "VERSION=$VERSION"
