@@ -109,8 +109,9 @@ jobs:
       - name: Compile and build (Windows)
         if: ${{ matrix.target == 'Windows' }}
         run: |
-          make -f Makefile.win build && \
+          make -f Makefile.win build
           make -f Makefile.win package
+        shell: cmd
 
       - name: Create package
         if: ${{ matrix.target == 'Linux' }}
