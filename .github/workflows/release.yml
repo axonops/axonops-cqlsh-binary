@@ -54,27 +54,41 @@ jobs:
             name: ubuntu24
             flavour: ubuntu
 
-          # - os: [ubuntu-22.04]
-          #   target: Linux
+          - os: [ubuntu-22.04]
+            target: Linux
+            name: ubuntu22
+            flavour: ubuntu
 
-          # # X86
-          # - os: macos-13
-          #   target: Macos
+          - os: [ubuntu-22.04]
+            target: Linux
+            name: rocky9
+            flavour: redhat
+            container:
+              image: rockylinux/rockylinux:9
 
-          # - os: windows-latest
-          #   target: Windows
-          #   runs-on: [self-hosted, windows]
+          # X86
+          - os: macos-13
+            target: Macos
+            flavour: mac
+
+          - os: windows-latest
+            target: Windows
+            flavour: windows
+            runs-on: [self-hosted]
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Get version
+      - name: Get versions
         run: |
           echo "VERSION=$(echo $GITHUB_REF_NAME | sed 's/v//')" >> $GITHUB_ENV
           echo "VERSION=$VERSION"
+          cat /etc/os-release
 
       - name: Setup Python v3.11
         uses: actions/setup-python@v5
+        if: ${{ matrix.target != 'Windows' }}
         with:
           python-version: 3.11
           cache: "pip"
@@ -88,12 +102,29 @@ jobs:
           source venv/bin/activate
           pip install cython
           ./configure
-          make
+          make -j4
+
+      - name: Compile and build (Windows)
+        if: ${{ matrix.target == 'Windows' }}
+        run: |
+          make -f Makefile.win build && \
+          make -f Makefile.win package
 
       - name: Create package
         if: ${{ matrix.target == 'Linux' }}
         run: |
           sudo gem install --no-document fpm
           ./package.sh ${VERSION}
+
+      - name: Upload Artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            *.zip
+            *.rpm
+            *.deb
+            installer*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 # code language: yaml
