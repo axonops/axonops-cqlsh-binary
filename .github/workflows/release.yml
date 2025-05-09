@@ -71,11 +71,10 @@ jobs:
           #   target: Macos
           #   flavour: mac
 
-          - os: windows-latest
+          - os: [self-hosted, Windows]
             target: Windows
             flavour: windows
             name: Windows
-            runs-on: self-hosted
 
     steps:
       - name: Checkout Repository
