@@ -121,7 +121,7 @@ jobs:
 
       - name: Setup Python v3.11
         uses: actions/setup-python@v5
-        if: ${{ matrix.target == 'Linux' && matrix.flavour != 'redhat' }}
+        if: ${{ matrix.container == null }}
         with:
           python-version: 3.11
           cache: "pip"
