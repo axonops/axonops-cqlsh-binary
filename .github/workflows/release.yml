@@ -157,12 +157,10 @@ jobs:
           make -f Makefile.win package
         shell: cmd
 
-      - name: Linux create package
-        if: ${{ matrix.target == 'Linux' }}
+      - name: Linux/OSX create package
+        if: ${{ matrix.target != 'Windows' }}
         run: |
           gem install --no-document --user fpm
-          export PATH=$PATH:~/.local/share/gem/ruby/$(ruby --version)/bin:$(ruby -e 'puts Gem.bindir')
-
           ./package.sh ${VERSION}
 
       - name: Upload Artifacts

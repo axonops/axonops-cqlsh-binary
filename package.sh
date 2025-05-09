@@ -3,6 +3,9 @@
 
 VERSION=${1:-0.0.5}
 
+RUBY_VERSION=$(ruby --version | awk '{print $2}')
+export PATH=$PATH:~/.local/share/gem/ruby/${RUBY_VERSION}/bin:$(ruby -e 'puts Gem.bindir')
+
 if [ -f /etc/debian_version ]; then
   DEB_ARCH=$(dpkg --print-architecture)
   debian_version=$(cat /etc/debian_version)
