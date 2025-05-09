@@ -1,0 +1,91 @@
+name: Release Workbench
+
+on:
+  push:
+    tags:
+      - 'v*'
+    branches:
+      - develop
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  # release:
+  #   name: Create Release
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+
+  #     - name: Fail if tag is not prefixed by v
+  #       run: |
+  #         if [[ $GITHUB_REF_NAME =~ ^v[0-9]+\.[0-9]+\.[0-9].* ]]; then
+  #             echo "Valid version format"
+  #         else
+  #             echo "Invalid version format"
+  #             exit 1
+  #         fi
+
+  #     - name: Create release
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         tag: ${{ github.ref_name }}
+  #       run: |
+  #         OPTIONS=""
+  #         if [[ $GITHUB_REF_NAME == *"internal"* ]]; then
+  #           OPTIONS="--prerelease"
+  #         fi
+  #         gh release create "$GITHUB_REF_NAME" \
+  #             --repo="$GITHUB_REPOSITORY" \
+  #             --title="Release for ${GITHUB_REF_NAME}" \
+  #             --generate-notes $OPTIONS
+
+  build:
+    name: Build on ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    #needs: [release]
+    strategy:
+      matrix:
+        include:
+          - os: [ubuntu-24.04]
+            target: Linux
+
+          # - os: [ubuntu-22.04]
+          #   target: Linux
+
+          # # X86
+          # - os: macos-13
+          #   target: Macos
+
+          # - os: windows-latest
+          #   target: Windows
+          #   runs-on: [self-hosted, windows]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Get version
+        run: |
+          echo "VERSION=$(echo $GITHUB_REF_NAME | sed 's/v//')" >> $GITHUB_ENV
+          echo "VERSION=$VERSION"
+
+      - name: Compile and build (Ubuntu/Debian)
+        if: ${{ contains(matrix.os, 'ubuntu') || contains(matrix.os, 'debian') }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libev-dev make libc6-dev ruby-rubygems
+          python -m venv venv
+          source venv/bin/activate
+          pip install cython
+          ./configure
+          make
+
+      - name: Create package
+        if: ${{ matrix.target == 'Linux' }}
+        run: |
+          gem install --no-document fpm
+          ./package.sh ${VERSION}
+
+# code language: yaml

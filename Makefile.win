@@ -1,0 +1,112 @@
+.PHONY: build build_ext clean install help
+.ONESHELL:
+.SHELL := /bin/bash
+.EXPORT_ALL_VARIABLES:
+
+# Configure-substituted variables
+OUTPUT = axonops-cqlsh
+PYTHON_VERSION = 311
+PYTHON_PATH = C:\Python$(PYTHON_VERSION)
+
+prefix = C:\PROGRAMFILES
+exec_prefix = ${prefix}
+bindir = ${exec_prefix}/bin
+libdir = ${exec_prefix}/lib
+
+# Compiler flags from configure
+CFLAGS = -g -O2 -fPIC -O2 -Wall -DMS_WIN64
+CPPFLAGS = -I$(PYTHON_PATH)\Include
+LDFLAGS = -L$(PYTHON_PATH)\Libs
+SOURCES = ./cqlshlib/serverversion.c \
+./cqlshlib/tracing.c \
+./cqlshlib/helptopics.c \
+./cqlshlib/cqlhandling.c \
+./cqlshlib/copyutil.c \
+./cqlshlib/cql_util.c \
+./cqlshlib/pylexotron.c \
+./cqlshlib/cql3handling.c \
+./cqlshlib/saferscanner.c \
+./cqlshlib/cqlshhandling.c \
+./cqlshlib/cqlshmain.c \
+./cqlshlib/authproviderhandling.c \
+./cqlshlib/__main__.c \
+./cqlshlib/sslhandling.c \
+./cqlshlib/displaying.c \
+./cqlshlib/formatting.c \
+./wcwidth/table_wide.c \
+./wcwidth/unicode_versions.c \
+./wcwidth/table_vs16.c \
+./wcwidth/table_zero.c \
+./wcwidth/wcwidth_main.c \
+./cqlsh.c \
+./cassandra/datastax/insights/reporter.c \
+./cassandra/datastax/insights/registry.c \
+./cassandra/datastax/insights/insight_utils.c \
+./cassandra/datastax/insights/insight_serializers.c \
+./cassandra/datastax/graph/graph_types.c \
+./cassandra/datastax/graph/fluent/ds_graph_fluent_query.c \
+./cassandra/datastax/graph/fluent/predicates.c \
+./cassandra/datastax/graph/fluent/_serializers.c \
+./cassandra/datastax/graph/fluent/_predicates.c \
+./cassandra/datastax/graph/fluent/_query.c \
+./cassandra/datastax/graph/fluent/serializers.c \
+./cassandra/datastax/graph/ds_graphson.c \
+./cassandra/datastax/graph/ds_graph_query.c \
+./cassandra/encoder.c \
+./cassandra/marshal.c \
+./cassandra/timestamps.c \
+./cassandra/pool.c \
+./cassandra/type_codes.c \
+./cassandra/auth.c \
+./cassandra/policies.c \
+./cassandra/metrics.c \
+./cassandra/cython_deps.c \
+./cassandra/query.c \
+./cassandra/segment.c \
+./cassandra/cqltypes.c \
+./cassandra/concurrent.c \
+./cassandra/metadata.c \
+./cassandra/protocol.c \
+./cassandra/cqlengine/statements.c \
+./cassandra/cqlengine/cqlengine_connection.c \
+./cassandra/cqlengine/models.c \
+./cassandra/cqlengine/columns.c \
+./cassandra/cqlengine/cqlengine_query.c \
+./cassandra/cqlengine/usertype.c \
+./cassandra/cqlengine/functions.c \
+./cassandra/cqlengine/named.c \
+./cassandra/cqlengine/operators.c \
+./cassandra/cqlengine/management.c \
+./cassandra/graph/types.c \
+./cassandra/graph/graphson.c \
+./cassandra/graph/graph_query.c \
+./cassandra/connection.c \
+./cassandra/cluster.c \
+./cassandra/column_encryption/encr_policies.c \
+./cassandra/column_encryption/_policies.c \
+./cassandra/util.c \
+./cassandra/murmur3.c \
+./cassandra/io/eventletreactor.c \
+./cassandra/io/asyncioreactor.c \
+./cassandra/io/geventreactor.c \
+./cassandra/io/asyncorereactor.c \
+./cassandra/io/libevreactor.c \
+./cassandra/io/twistedreactor.c
+	
+build: build_ext ## Build the application
+	@gcc $(CFLAGS) $(CPPFLAGS) \
+	main_wrapper.c $(SOURCES) \
+	$(LDFLAGS) -lpython$(PYTHON_VERSION) \
+	-o $(OUTPUT)
+
+build_ext: ## Build Cython extensions
+	@$(PYTHON_PATH)\\python.exe setup_build.py build_ext --inplace
+
+help: ## Show this help message
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+package:
+	"\Program Files (x86)\NSIS\makensis" axonops-cqlsh.nsi
+
+# code: language=Makefile
+

@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*~
 
 # C extensions
 *.so
@@ -172,3 +173,16 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+build
+dist
+cqlsh_binary
+autom4te.cache/
+config.status
+Makefile
+axonops-cqlsh
+axonops-cqlsh.*
+
+cassandra/*.c
+wcwidth/**/*.c
+cqlshlib/**/*.c
