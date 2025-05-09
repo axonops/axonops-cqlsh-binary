@@ -120,6 +120,8 @@ jobs:
       - name: Install build dependencies
         if: ${{ matrix.flavour == 'mac' }}
         run: |
+          export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
+          echo "PATH=$PATH" >> $GITHUB_ENV
           brew install python@3.11 gcc make libev
 
       - name: Compile and build (Ubuntu/Debian)
@@ -130,7 +132,8 @@ jobs:
           fi
           python -m venv venv
           source venv/bin/activate
-          pip install cython
+          python3 -m ensurepip
+          pip3 install cython
           ./configure
           make -j4
 
