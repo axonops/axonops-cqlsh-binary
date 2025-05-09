@@ -194,7 +194,7 @@ jobs:
           $PIP install cython
 
           ./configure
-          make -j4
+          make -j4 PYTHON_CMD="$PYTHON" PYTHON_PIP="$PIP"
 
       - name: Compile and build (Windows)
         if: ${{ matrix.target == 'Windows' }}

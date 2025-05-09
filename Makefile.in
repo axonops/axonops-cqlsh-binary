@@ -3,6 +3,7 @@
 .SHELL := /bin/bash
 .EXPORT_ALL_VARIABLES:
 
+PYTHON_CMD ?= /usr/bin/python3
 CURRENT_FOLDER=$(shell basename "$$(pwd)")
 
 # Configure-substituted variables
