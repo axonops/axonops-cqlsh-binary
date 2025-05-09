@@ -101,6 +101,12 @@ jobs:
           echo "VERSION=$VERSION" >> $env:GITHUB_ENV
         shell: powershell
 
+      - name: RedHat pre-reqs
+        if: ${{ matrix.flavour == 'redhat' }}
+        run: |
+          dnf -y install epel-release
+          dnf -y install lsb_release
+
       - name: Setup Python v3.11
         uses: actions/setup-python@v5
         if: ${{ matrix.target == 'Linux' }}
