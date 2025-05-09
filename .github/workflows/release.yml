@@ -67,12 +67,13 @@ jobs:
             container:
               image: rockylinux:9
 
-          - os: [ubuntu-22.04]
-            target: Linux
-            name: debian11
-            flavour: debian
-            container:
-              image: debian:11
+          # It needs work, python 3.9
+          # - os: [ubuntu-22.04]
+          #   target: Linux
+          #   name: debian11
+          #   flavour: debian
+          #   container:
+          #     image: debian:11
 
           - os: [ubuntu-22.04]
             target: Linux
