@@ -4,50 +4,50 @@ on:
   push:
     tags:
       - 'v*'
-    branches:
-      - develop
+    # branches:
+    #   - develop
 
 defaults:
   run:
     shell: bash
 
 jobs:
-  # release:
-  #   name: Create Release
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  #     - name: Fail if tag is not prefixed by v
-  #       run: |
-  #         if [[ $GITHUB_REF_NAME =~ ^v[0-9]+\.[0-9]+\.[0-9].* ]]; then
-  #             echo "Valid version format"
-  #         else
-  #             echo "Invalid version format"
-  #             exit 1
-  #         fi
+      - name: Fail if tag is not prefixed by v
+        run: |
+          if [[ $GITHUB_REF_NAME =~ ^v[0-9]+\.[0-9]+\.[0-9].* ]]; then
+              echo "Valid version format"
+          else
+              echo "Invalid version format"
+              exit 1
+          fi
 
-  #     - name: Create release
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #         tag: ${{ github.ref_name }}
-  #       run: |
-  #         OPTIONS=""
-  #         if [[ $GITHUB_REF_NAME == *"internal"* ]]; then
-  #           OPTIONS="--prerelease"
-  #         fi
-  #         gh release create "$GITHUB_REF_NAME" \
-  #             --repo="$GITHUB_REPOSITORY" \
-  #             --title="Release for ${GITHUB_REF_NAME}" \
-  #             --generate-notes $OPTIONS
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
+        run: |
+          OPTIONS=""
+          if [[ $GITHUB_REF_NAME == *"internal"* ]]; then
+            OPTIONS="--prerelease"
+          fi
+          gh release create "$GITHUB_REF_NAME" \
+              --repo="$GITHUB_REPOSITORY" \
+              --title="Release for ${GITHUB_REF_NAME}" \
+              --generate-notes $OPTIONS
 
   build:
     name: Build on ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
-    #needs: [release]
+    needs: [release]
     strategy:
-      fail-fast: false
+      #fail-fast: false
       matrix:
         include:
           - os: [ubuntu-24.04]
