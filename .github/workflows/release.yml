@@ -47,6 +47,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     #needs: [release]
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: [ubuntu-24.04]
