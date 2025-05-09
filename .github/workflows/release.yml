@@ -183,8 +183,9 @@ jobs:
           fi
           $PYTHON -m venv venv
           source venv/bin/activate
-          # $PYTHON -m ensurepip
-          $PIP install cython setuptools
+          $PYTHON -m ensurepip
+          $PIP install cython 
+          [ "${{ matrix.flavour }}" == "readht" ] && $PIP install setuptools
           ./configure
           make -j4
 
