@@ -49,7 +49,7 @@ install: build ## Install the application
 	cp -a build/lib.*/* $(DESTDIR)$(libdir)
 
 build_ext: ## Build Cython extensions
-	@python3 setup_build.py build_ext --inplace
+	@$(PYTHON_CMD) setup_build.py build_ext --inplace
 
 clean: ## Remove build artifacts
 	@rm -rf build
