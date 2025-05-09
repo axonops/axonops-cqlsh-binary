@@ -73,6 +73,12 @@ jobs:
           echo "VERSION=$(echo $GITHUB_REF_NAME | sed 's/v//')" >> $GITHUB_ENV
           echo "VERSION=$VERSION"
 
+      - name: Setup Python v3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+          cache: "pip"
+
       - name: Compile and build (Ubuntu/Debian)
         if: ${{ matrix.flavour == 'ubuntu' }}
         run: |
