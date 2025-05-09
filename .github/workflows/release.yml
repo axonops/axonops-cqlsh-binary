@@ -124,7 +124,7 @@ jobs:
 
       - name: Compile and build (Ubuntu/Debian)
         run: |
-          if [ "${{ matrix.flavour }}" == "debian' ]; then
+          if [ "${{ matrix.flavour }}" == "debian" ]; then
             sudo apt-get update
             sudo apt-get install -y build-essential libev-dev make libc6-dev ruby-rubygems
           fi
