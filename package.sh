@@ -18,7 +18,7 @@ fi
 
 if [ -f /etc/debian_version ]; then
   DEB_ARCH=$(dpkg --print-architecture)
-  debian_version=$(cat /etc/debian_version)
+  debian_version=$(cat /etc/debian_version | cut -d / -f 1)
   VERSION=${VERSION}~debian${debian_version}
 
   rm -f axonops-cqlsh_${VERSION}_${DEB_ARCH}.deb
