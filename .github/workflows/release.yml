@@ -52,12 +52,12 @@ jobs:
           - os: [ubuntu-24.04]
             target: Linux
             name: ubuntu24
-            flavour: ubuntu
+            flavour: debian
 
           - os: [ubuntu-22.04]
             target: Linux
             name: ubuntu22
-            flavour: ubuntu
+            flavour: debian
 
           # - os: [ubuntu-22.04]
           #   target: Linux
@@ -70,6 +70,11 @@ jobs:
           # - os: macos-13
           #   target: Macos
           #   flavour: mac
+
+          - os: macos-14
+            target: Macos
+            flavour: mac
+            name: Macos14
 
           - os: [self-hosted, Windows]
             target: Windows
@@ -94,11 +99,35 @@ jobs:
           python-version: 3.11
           cache: "pip"
 
-      - name: Compile and build (Ubuntu/Debian)
-        if: ${{ matrix.flavour == 'ubuntu' }}
+      - name: Set up Homebrew
+        if: ${{ matrix.flavour == 'mac' }}
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Cache Homebrew Bundler RubyGems
+        if: ${{ matrix.flavour == 'mac' }}
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.set-up-homebrew.outputs.gems-path }}
+          key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
+          restore-keys: ${{ runner.os }}-rubygems-
+
+      - name: Install Homebrew Bundler RubyGems
+        if: ${{ matrix.flavour == 'mac' }} && steps.cache.outputs.cache-hit != 'true'
+        run: brew install-bundler-gems
+
+      - name: Install build dependencies
+        if: ${{ matrix.flavour == 'mac' }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential libev-dev make libc6-dev ruby-rubygems
+          brew install python@3.11 gcc make libev
+
+      - name: Compile and build (Ubuntu/Debian)
+        run: |
+          if [ "${{ matrix.flavour }}" == "debian' ]; then
+            sudo apt-get update
+            sudo apt-get install -y build-essential libev-dev make libc6-dev ruby-rubygems
+          fi
           python -m venv venv
           source venv/bin/activate
           pip install cython
@@ -109,9 +138,6 @@ jobs:
         if: ${{ matrix.target == 'Windows' }}
         run: |
           hostname
-          dir
-          dir \
-          dir c:\
           make -f Makefile.win build
         shell: cmd
 
@@ -121,10 +147,12 @@ jobs:
           make -f Makefile.win package
         shell: cmd
 
-      - name: Create package
+      - name: Linux create package
         if: ${{ matrix.target == 'Linux' }}
         run: |
-          sudo gem install --no-document fpm
+          gem install --no-document --user fpm
+          export PATH=$PATH:~/.local/share/gem/ruby/$(ruby --version)/bin:$(ruby -e 'puts Gem.bindir')
+
           ./package.sh ${VERSION}
 
       - name: Upload Artifacts
