@@ -171,10 +171,20 @@ jobs:
             fi
             dnf install -y gcc make libev-devel python3.11-pip python3.11-setuptools python3.11-devel glibc-devel rubygems
           fi
-          python3 -m venv venv
+          if [ -x /usr/bin/python3 ]; then
+            PYTHON=python3
+          else
+            PYTHON=python
+          fi
+          if [ -x /usr/bin/pip3 ]; then
+            PIP=pip3
+          else
+            PIP=pip
+          fi
+          $PYTHON -m venv venv
           source venv/bin/activate
-          python3 -m ensurepip
-          pip3 install cython setuptools
+          $PYTHON -m ensurepip
+          $PIP install cython setuptools
           ./configure
           make -j4
 
