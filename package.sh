@@ -31,7 +31,7 @@ if [ -f /etc/os-release ]; then
   PKG_VERSION=${PKG_VERSION}~${ID}${VERSION_ID}
 
   rm -f axonops-cqlsh_${PKG_VERSION}_${ARCH}.deb
-  fpm -s dir -t $TARGET -n axonops-cqlsh -v ${VERSION} -a $DEB_ARCH \
+  fpm -s dir -t $TARGET -n axonops-cqlsh -v ${PKG_VERSION} -a $DEB_ARCH \
     --maintainer "AxonOps Limited <support@axonops.com>" \
     --description "CQL Shell for interacting with Apache Cassandra" \
     --deb-use-file-permissions \
@@ -42,12 +42,12 @@ if [ -f /etc/os-release ]; then
 fi
 
 if [ "$(uname -s)" == "Darwin" ]; then
-  PKG_VERSION=${VERSION}~darwin${redhat_version}
+  PKG_VERSION=${PKG_VERSION}~darwin${redhat_version}
   ARCH=$(uname -m)
   MAJOR_VERSION=$(sw_vers -productVersion | cut -d '.' -f 1)
   LIB_DIR=$(ls -1 build/ | grep lib.)
 
-  fpm -s dir -t zip -n axonops-cqlsh-macos-${PKG_VERSION}-${ARCH} -v ${PKG_VERSION} -a $ARCH \
+  fpm -s dir -t zip -n axonops-cqlsh-${PKG_VERSION}-${ARCH} -v ${PKG_VERSION} -a $ARCH \
     --maintainer "AxonOps Limited <support@axonops.com>" \
     --description "CQL Shell for interacting with Apache Cassandra" \
     --prefix /opt/AxonOps \
