@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -ex
 #
 
 VERSION=${1:-0.0.5}
@@ -22,7 +22,7 @@ if [ -f /etc/debian_version ]; then
   VERSION=${VERSION}~debian${debian_version}
 
   rm -f axonops-cqlsh_${VERSION}_${DEB_ARCH}.deb
-  $FPM -s dir -t deb -n axonops-cqlsh -v ${VERSION} -a $DEB_ARCH \
+  fpm -s dir -t deb -n axonops-cqlsh -v ${VERSION} -a $DEB_ARCH \
     --maintainer "AxonOps Limited <support@axonops.com>" \
     --description "CQL Shell for interacting with Apache Cassandra" \
     --deb-use-file-permissions \
@@ -37,7 +37,7 @@ if [ "$(uname -s)" == "Darwin" ]; then
   ARCH=$(uname -m)
   MAJOR_VERSION=$(sw_vers -productVersion | cut -d '.' -f 1)
 
-  $FPM -s dir -t zip -n axonops-cqlsh -v ${VERSION} -a $ARCH \
+  fpm -s dir -t zip -n axonops-cqlsh -v ${VERSION} -a $ARCH \
     --maintainer "AxonOps Limited <support@axonops.com>" \
     --description "CQL Shell for interacting with Apache Cassandra" \
     --prefix /opt/AxonOps \
@@ -51,7 +51,7 @@ if [ -f /etc/redhat-release ]; then
   VERSION=${VERSION}~rockylinux${redhat_version}
 
   rm -f axonops-cqlsh_${VERSION}_${RPM_ARCH}.rpm
-  $FPM -s dir -t rpm -n axonops-cqlsh -v ${VERSION} -a $RPM_ARCH \
+  fpm -s dir -t rpm -n axonops-cqlsh -v ${VERSION} -a $RPM_ARCH \
     --maintainer "AxonOps Limited <support@axonops.com>" \
     --description "CQL Shell for interacting with Apache Cassandra" \
     -d python3.11-libs \
