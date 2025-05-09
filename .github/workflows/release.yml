@@ -137,6 +137,7 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y build-essential libev-dev make libc6-dev
           elif [ "${{ matrix.flavour }}" == "redhat" ]; then
+            cat /etc/os-release
             if ! command -v dnf &> /dev/null; then
               echo "Installing dnf..."
               microdnf install -y dnf
