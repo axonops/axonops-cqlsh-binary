@@ -114,7 +114,7 @@ jobs:
           restore-keys: ${{ runner.os }}-rubygems-
 
       - name: Install Homebrew Bundler RubyGems
-        if: ${{ matrix.flavour == 'mac' }} && steps.cache.outputs.cache-hit != 'true'
+        if: ${{ matrix.flavour == 'mac' && steps.cache.outputs.cache-hit != 'true' }}
         run: brew install-bundler-gems
 
       - name: Install build dependencies
