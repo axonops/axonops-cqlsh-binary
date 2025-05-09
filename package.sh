@@ -31,7 +31,7 @@ if [ -f /etc/os-release ]; then
   PKG_VERSION=${PKG_VERSION}~${ID}${VERSION_ID}
 
   rm -f axonops-cqlsh_${PKG_VERSION}_${ARCH}.deb
-  fpm -s dir -t $TARGET -n axonops-cqlsh -v ${PKG_VERSION} -a $DEB_ARCH \
+  fpm -s dir -t $TARGET -n axonops-cqlsh -v ${PKG_VERSION} -a $ARCH \
     --maintainer "AxonOps Limited <support@axonops.com>" \
     --description "CQL Shell for interacting with Apache Cassandra" \
     --deb-use-file-permissions \
