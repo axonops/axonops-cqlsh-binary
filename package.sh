@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 #
 
-VERSION=${1:-0.0.5}
+PKG_VERSION=${1:-0.0.5}
 
 # Get the user's gem directory using Ruby
 GEM_USER_DIR=$(ruby -r rubygems -e 'puts Gem.user_dir')
@@ -16,13 +16,22 @@ if [ ! -f $GEM_BIN_DIR/fpm ]; then
   sudo gem install fpm
 fi
 
-if [ -f /etc/debian_version ]; then
-  DEB_ARCH=$(dpkg --print-architecture)
-  debian_version=$(cat /etc/debian_version | cut -d / -f 1)
-  VERSION=${VERSION}~debian${debian_version}
+if [ -f /etc/os-release ]; then
+  source /etc/os-release
 
-  rm -f axonops-cqlsh_${VERSION}_${DEB_ARCH}.deb
-  fpm -s dir -t deb -n axonops-cqlsh -v ${VERSION} -a $DEB_ARCH \
+  if [ "$ID" == "debian" ]; then
+    ARCH=$(dpkg --print-architecture)
+    TARGET="deb"
+    DEPS="libpython3.11"
+  else
+    ARCH=$(uname -m)
+    DEPS="python3.11-libs"
+    TARGET="rpm"
+  fi
+  PKG_VERSION=${PKG_VERSION}~${ID}${VERSION_ID}
+
+  rm -f axonops-cqlsh_${PKG_VERSION}_${ARCH}.deb
+  fpm -s dir -t $TARGET -n axonops-cqlsh -v ${VERSION} -a $DEB_ARCH \
     --maintainer "AxonOps Limited <support@axonops.com>" \
     --description "CQL Shell for interacting with Apache Cassandra" \
     --deb-use-file-permissions \
@@ -33,30 +42,15 @@ if [ -f /etc/debian_version ]; then
 fi
 
 if [ "$(uname -s)" == "Darwin" ]; then
-  VERSION=${VERSION}~darwin${redhat_version}
+  PKG_VERSION=${VERSION}~darwin${redhat_version}
   ARCH=$(uname -m)
   MAJOR_VERSION=$(sw_vers -productVersion | cut -d '.' -f 1)
   LIB_DIR=$(ls -1 build/ | grep lib.)
 
-  fpm -s dir -t zip -n axonops-cqlsh -v ${VERSION} -a $ARCH \
+  fpm -s dir -t zip -n axonops-cqlsh-macos-${PKG_VERSION}-${ARCH} -v ${PKG_VERSION} -a $ARCH \
     --maintainer "AxonOps Limited <support@axonops.com>" \
     --description "CQL Shell for interacting with Apache Cassandra" \
     --prefix /opt/AxonOps \
     axonops-cqlsh=/bin/cqlsh \
     build/${LIB_DIR}/=/lib
-fi
-
-if [ -f /etc/redhat-release ]; then
-  RPM_ARCH=$(uname -m)
-  redhat_version=$(cat /etc/redhat-release  | awk '{print $4}')
-  VERSION=${VERSION}~rockylinux${redhat_version}
-
-  rm -f axonops-cqlsh_${VERSION}_${RPM_ARCH}.rpm
-  fpm -s dir -t rpm -n axonops-cqlsh -v ${VERSION} -a $RPM_ARCH \
-    --maintainer "AxonOps Limited <support@axonops.com>" \
-    --description "CQL Shell for interacting with Apache Cassandra" \
-    -d python3.11-libs \
-    --prefix /opt/AxonOps \
-    axonops-cqlsh=/bin/cqlsh \
-    build/lib.linux-$(uname -m)-cpython-311/=/lib
 fi

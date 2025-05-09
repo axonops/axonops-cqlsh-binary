@@ -171,7 +171,7 @@ jobs:
             *.zip
             *.rpm
             *.deb
-            installer*.exe
+            axonops-cqlsh-installer.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
