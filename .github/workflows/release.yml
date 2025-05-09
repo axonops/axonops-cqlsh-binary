@@ -43,10 +43,10 @@ jobs:
   #             --generate-notes $OPTIONS
 
   build:
-    name: Build on ${{ matrix.container || matrix.name }}
+    name: Build on ${{ matrix.container && matrix.container.image || matrix.name }}
     runs-on: ${{ matrix.os }}
     #needs: [release]
-    container: ${{ matrix.container && fromJSON(format('{"image":"%s","options":"--user root"}', matrix.container.image)) || null }}
+    container: ${{ matrix.container && matrix.container || null }}
     strategy:
       matrix:
         include:
