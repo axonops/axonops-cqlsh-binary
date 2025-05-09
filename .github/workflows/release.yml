@@ -109,7 +109,14 @@ jobs:
       - name: Compile and build (Windows)
         if: ${{ matrix.target == 'Windows' }}
         run: |
+          dir
+          dir \
           make -f Makefile.win build
+        shell: cmd
+
+      - name: Windows package
+        if: ${{ matrix.target == 'Windows' }}
+        run: |
           make -f Makefile.win package
         shell: cmd
 
