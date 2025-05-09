@@ -94,7 +94,7 @@ jobs:
 
       - name: Setup Python v3.11
         uses: actions/setup-python@v5
-        if: ${{ matrix.target != 'Windows' }}
+        if: ${{ matrix.target == 'Linux' }}
         with:
           python-version: 3.11
           cache: "pip"
