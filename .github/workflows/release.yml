@@ -125,6 +125,7 @@ jobs:
           brew install python@3.11 gcc make libev
 
       - name: Compile and build (Ubuntu/Debian)
+        if: ${{ matrix.target != 'Windows' }}
         run: |
           if [ "${{ matrix.flavour }}" == "debian" ]; then
             sudo apt-get update
