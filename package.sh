@@ -36,13 +36,14 @@ if [ "$(uname -s)" == "Darwin" ]; then
   VERSION=${VERSION}~darwin${redhat_version}
   ARCH=$(uname -m)
   MAJOR_VERSION=$(sw_vers -productVersion | cut -d '.' -f 1)
+  LIB_DIR=$(ls -1 build/ | grep lib.)
 
   fpm -s dir -t zip -n axonops-cqlsh -v ${VERSION} -a $ARCH \
     --maintainer "AxonOps Limited <support@axonops.com>" \
     --description "CQL Shell for interacting with Apache Cassandra" \
     --prefix /opt/AxonOps \
     axonops-cqlsh=/bin/cqlsh \
-    build/lib.macosx-${MAJOR_VERSION}.0-$(uname -m)-cpython-311/=/lib
+    build/${LIB_DIR}/=/lib
 fi
 
 if [ -f /etc/redhat-release ]; then
