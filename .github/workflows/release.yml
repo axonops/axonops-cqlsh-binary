@@ -90,7 +90,6 @@ jobs:
         if: ${{ github.ref_name != 'develop' }}
         run: |
           echo "VERSION=$(echo $GITHUB_REF_NAME | sed 's/v//')" >> $GITHUB_ENV
-          echo "VERSION=$VERSION"
           [ -f /etc/os-release ] && cat /etc/os-release
 
       - name: Setup Python v3.11
