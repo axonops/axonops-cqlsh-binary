@@ -67,9 +67,9 @@ jobs:
               image: rockylinux/rockylinux:9
 
           # X86
-          - os: macos-13
-            target: Macos
-            flavour: mac
+          # - os: macos-13
+          #   target: Macos
+          #   flavour: mac
 
           - os: windows-latest
             target: Windows
@@ -119,6 +119,7 @@ jobs:
 
       - name: Upload Artifacts
         uses: softprops/action-gh-release@v2
+        if: ${{ github.ref_name != 'develop' }}
         with:
           files: |
             *.zip
