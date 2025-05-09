@@ -149,8 +149,11 @@ jobs:
         run: |
           hostname
           make -f Makefile.win build
-          move axonops-cqlsh-installer.exe axonops-cqlsh-installer-${{ github.ref_name }}.exe
+          move axonops-cqlsh-installer.exe axonops-cqlsh-installer-%GITHUB_REF_NAME%.exe
+          del /Q axonops-cqlsh.exe
         shell: cmd
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
 
       - name: Windows package
         if: ${{ matrix.target == 'Windows' }}
@@ -172,8 +175,7 @@ jobs:
             *.zip
             *.rpm
             *.deb
-            axonops-cqlsh-installer.exe
-            axonops-cqlsh-installer-${{ github.ref_name }}.exe
+            *.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
