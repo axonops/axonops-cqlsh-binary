@@ -155,6 +155,7 @@ jobs:
       - name: Compile and build (Ubuntu/Debian)
         if: ${{ matrix.target != 'Windows' }}
         run: |
+          set -ex
           if [ "${{ matrix.flavour }}" == "debian" ]; then
             if ! command -v sudo &> /dev/null; then
               SUDO=""
@@ -172,14 +173,14 @@ jobs:
             dnf install -y gcc make libev-devel python3.11-pip python3.11-setuptools python3.11-devel glibc-devel rubygems
           fi
           if [ -x /usr/bin/python3 ]; then
-            PYTHON=python3
+            PYTHON=/usr/bin/python3
           else
-            PYTHON=python
+            PYTHON=/usr/bin/python
           fi
           if [ -x /usr/bin/pip3 ]; then
-            PIP=pip3
+            PIP=/usr/bin/pip3
           else
-            PIP=pip
+            PIP=/usr/bin/pip
           fi
           $PYTHON -m venv venv
           source venv/bin/activate
