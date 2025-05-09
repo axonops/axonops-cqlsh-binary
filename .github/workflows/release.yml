@@ -43,7 +43,7 @@ jobs:
   #             --generate-notes $OPTIONS
 
   build:
-    name: Build on ${{ matrix.target }}
+    name: Build on ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     #needs: [release]
     strategy:
@@ -59,12 +59,12 @@ jobs:
             name: ubuntu22
             flavour: ubuntu
 
-          - os: [ubuntu-22.04]
-            target: Linux
-            name: rocky9
-            flavour: redhat
-            container:
-              image: rockylinux/rockylinux:9
+          # - os: [ubuntu-22.04]
+          #   target: Linux
+          #   name: rocky9
+          #   flavour: redhat
+          #   container:
+          #     image: rockylinux/rockylinux:9
 
           # X86
           # - os: macos-13
