@@ -41,7 +41,7 @@ jobs:
               --generate-notes $OPTIONS
 
   build:
-    name: Build on ${{ matrix.container && matrix.container.image || matrix.name }}
+    name: Build on ${{ matrix.container && matrix.container.image || matrix.name }} (${{ matrix.arch }})
     runs-on: ${{ matrix.os }}
     needs: [release]
     container: ${{ matrix.container && matrix.container || null }}
@@ -52,21 +52,25 @@ jobs:
             target: Linux
             name: ubuntu24
             flavour: debian
+            arch: arm64
 
           - os: [ubuntu-24.04]
             target: Linux
             name: ubuntu24
             flavour: debian
+            arch: amd64
 
           - os: [ubuntu-22.04]
             target: Linux
             name: ubuntu22
             flavour: debian
+            arch: amd64
 
           - os: [ubuntu-22.04]
             target: Linux
             name: rocky9
             flavour: redhat
+            arch: amd64
             container:
               image: rockylinux:9
 
@@ -74,6 +78,7 @@ jobs:
             target: Linux
             name: debian11
             flavour: debian
+            arch: amd64
             container:
               image: debian:11
 
@@ -81,6 +86,7 @@ jobs:
             target: Linux
             name: debian12
             flavour: debian
+            arch: amd64
             container:
               image: debian:12
 
@@ -93,12 +99,14 @@ jobs:
           - os: macos-14
             target: Macos
             flavour: mac
+            arch: arm64
             name: Macos14
 
           - os: [self-hosted, Windows]
             target: Windows
             flavour: windows
             name: Windows
+            arch: amd64
 
     steps:
       - name: Checkout Repository
