@@ -149,8 +149,9 @@ jobs:
         if: ${{ matrix.flavour == 'mac' }}
         run: |
           set -x
-          export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
-          echo "PATH=$PATH" >> $GITHUB_ENV
+          # export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
+          # echo "PATH=$PATH" >> $GITHUB_ENV
+          rm -rf /usr/local/bin/2to3-3.11
           brew install python@3.11 gcc make libev
 
       - name: Compile and build (Ubuntu/Debian)
