@@ -183,7 +183,7 @@ jobs:
               echo "Installing dnf..."
               microdnf install -y dnf
             fi
-            dnf install -y gcc make libev-devel python3.11-pip python3.11-setuptools python3.11-devel glibc-devel rubygems
+            dnf install -y gcc make libev-devel python3.11-pip python3.11-setuptools python3.11-devel glibc-devel rubygems rpmbuild
           fi
           
           if command -v python3.11 &> /dev/null; then
