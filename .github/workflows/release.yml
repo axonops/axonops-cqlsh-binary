@@ -233,7 +233,11 @@ jobs:
       - name: Linux/OSX create package
         if: ${{ matrix.target != 'Windows' }}
         run: |
-          gem install --no-document --user fpm
+          if [ $(id -u) -gt 0 ]; then
+            gem install --no-document --user fpm
+          else
+            gem install --no-document fpm
+          fi
           ./package.sh ${VERSION}
 
       - name: Upload Artifacts

@@ -7,7 +7,11 @@ PKG_VERSION=${1:-0.0.5}
 GEM_USER_DIR=$(ruby -r rubygems -e 'puts Gem.user_dir')
 
 # Construct the bin path
-GEM_BIN_DIR="$GEM_USER_DIR/bin"
+if command -v fpm >/dev/null 2>&1; then
+  GEM_BIN_DIR=$(dirname $(command -v fpm))
+else
+  GEM_BIN_DIR="$GEM_USER_DIR/bin"
+fi
 
 export PATH=$PATH:$GEM_BIN_DIR
 
