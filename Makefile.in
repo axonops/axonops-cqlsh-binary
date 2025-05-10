@@ -23,12 +23,12 @@ libdir = @libdir@
 # Compiler flags from configure
 CFLAGS = @CFLAGS@ -DLIB_DIR=\"$(libdir)\" -fPIC -O2 -Wall
 CPPFLAGS = @CPPFLAGS@ -I$(PYTHON_INCLUDE) -I$(LIBEV_INCLUDE) -I$(GETTEXT_INCLUDE)
-LDFLAGS = @LDFLAGS@ -L$(LIBEV_LIB) -L$(GETTEXT_LIB)
+LDFLAGS = @LDFLAGS@ -L$(LIBEV_LIB) -L$(GETTEXT_LIB) $(PYTHON_LIB)
 	
 build: build_ext ## Build the application
 	@gcc $(CFLAGS) $(CPPFLAGS) \
 	main_wrapper.c $(shell cat sources.txt) \
-	$(LDFLAGS) -lev -lpython3.11 \
+	$(LDFLAGS) -lev \
 	-o $(OUTPUT)
 
 test:

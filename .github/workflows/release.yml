@@ -48,6 +48,11 @@ jobs:
     strategy:
       matrix:
         include:
+          - os: [ubuntu-24.04-arm]
+            target: Linux
+            name: ubuntu24
+            flavour: debian
+
           - os: [ubuntu-24.04]
             target: Linux
             name: ubuntu24
