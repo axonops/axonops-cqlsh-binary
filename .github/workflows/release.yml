@@ -157,12 +157,13 @@ jobs:
         if: ${{ matrix.target != 'Windows' }}
         run: |
           set -ex
+          if ! command -v sudo &> /dev/null; then
+            SUDO=""
+          else
+            SUDO="sudo"
+          fi
+
           if [ "${{ matrix.flavour }}" == "debian" ]; then
-            if ! command -v sudo &> /dev/null; then
-              SUDO=""
-            else
-              SUDO="sudo"
-            fi
             $SUDO apt-get update
             $SUDO apt-get install -y build-essential libev-dev make libc6-dev rubygems
             [[ "${{ matrix.name }}" == "debian12" ]] && $SUDO apt-get install -y --ignore-missing python3.11 python3.11-venv python3.11-dev
@@ -195,10 +196,11 @@ jobs:
           $PYTHON -m pip install cython
 
           ./configure
-          if command -v make &> /dev/null; then
-            MAKE=$(command -v make)
-          else
+
+          if command -v gmake &> /dev/null; then
             MAKE=$(command -v gmake)
+          else
+            MAKE=$(command -v make)
           fi
           $MAKE -j4 PYTHON_CMD=${PYTHON}
 
