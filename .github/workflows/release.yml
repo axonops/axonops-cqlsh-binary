@@ -194,7 +194,7 @@ jobs:
           pip3 install cython
 
           ./configure
-          make -j4
+          make -j4 PYTHON_CMD=$(command -v python3)
 
       - name: Compile and build (Windows)
         if: ${{ matrix.target == 'Windows' }}
