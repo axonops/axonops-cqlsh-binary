@@ -29,6 +29,7 @@ if [ -f /etc/os-release ]; then
     TARGET="rpm"
   fi
   PKG_VERSION=${PKG_VERSION}~${ID}${VERSION_ID}
+  LIB_DIR=$(ls -1 build/ | grep lib.linux)
 
   rm -f axonops-cqlsh_${PKG_VERSION}_${ARCH}.deb
   fpm -s dir -t $TARGET -n axonops-cqlsh -v ${PKG_VERSION} -a $ARCH \
@@ -38,7 +39,7 @@ if [ -f /etc/os-release ]; then
     -d libpython3.11 \
     --prefix /opt/AxonOps \
     axonops-cqlsh=/bin/cqlsh \
-    build/lib.linux-$(uname -m)-cpython-311/=/lib
+    build/${LIB_DIR}/=/lib
 fi
 
 if [ "$(uname -s)" == "Darwin" ]; then
