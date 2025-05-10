@@ -148,6 +148,7 @@ jobs:
       - name: Install build dependencies
         if: ${{ matrix.flavour == 'mac' }}
         run: |
+          set -x
           export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
           echo "PATH=$PATH" >> $GITHUB_ENV
           brew install python@3.11 gcc make libev
