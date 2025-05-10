@@ -59,21 +59,14 @@ AC_ARG_WITH([python-config],
   ]
 )
 
-# If no specific path was provided, try to find python3-config in PATH or from a list of possible binaries
+# If no specific path was provided, try to find python3-config in PATH
 if test "x$PYTHON_CONFIG" = "x"; then
-  AC_MSG_CHECKING([for python3-config in common locations])
-  for candidate in python3.11-config python3.10-config python3.9-config python3-config; do
-    candidate_path=$(command -v $candidate 2>/dev/null)
-    if test -x "$candidate_path"; then
-      PYTHON_CONFIG="$candidate_path"
-      AC_MSG_RESULT([found at $candidate_path])
-      break
-    fi
-  done
-  if test "x$PYTHON_CONFIG" = "x"; then
+  AC_PATH_PROGS([PYTHON_CONFIG], [python3-config python3.11-config python3.10-config python3.9-config], [no])
+  if test "x$PYTHON_CONFIG" = "xno"; then
     AC_MSG_ERROR([Cannot find python3-config. Please install Python development files or specify path with --with-python-config])
   fi
 fi
+
 
 # Check for Python include path
 AC_MSG_CHECKING([Python include path])
