@@ -62,7 +62,7 @@ AC_ARG_WITH([python-config],
 # If no specific path was provided, try to find python3-config in PATH or from a list of possible binaries
 if test "x$PYTHON_CONFIG" = "x"; then
   AC_MSG_CHECKING([for python3-config in common locations])
-  for candidate in python3-config python3.11-config python3.10-config python3.9-config; do
+  for candidate in python3.11-config python3.10-config python3.9-config python3-config; do
     candidate_path=$(command -v $candidate 2>/dev/null)
     if test -x "$candidate_path"; then
       PYTHON_CONFIG="$candidate_path"
