@@ -176,13 +176,10 @@ jobs:
           
           if command -v python3.11 &> /dev/null; then
             PYTHON=$(command -v python3.11)
-            PIP=$(command -v pip3.11)
           elif command -v python3 &> /dev/null; then
             PYTHON=$(command -v python3)
-            PIP=$(command -v pip3)
           elif command -v python &> /dev/null; then
             PYTHON=$(command -v python)
-            PIP=$(command -v pip)
           else
             echo "Python not found"
             exit 1
