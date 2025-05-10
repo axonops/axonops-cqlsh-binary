@@ -194,7 +194,12 @@ jobs:
           $PYTHON -m pip install cython
 
           ./configure
-          make -j4 PYTHON_CMD=${PYTHON}
+          if command -v make &> /dev/null; then
+            MAKE=$(command -v make)
+          else
+            MAKE=$(command -v gmake)
+          fi
+          $MAKE -j4 PYTHON_CMD=${PYTHON}
 
       - name: Compile and build (Windows)
         if: ${{ matrix.target == 'Windows' }}
