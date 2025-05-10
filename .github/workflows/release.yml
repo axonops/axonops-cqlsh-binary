@@ -83,10 +83,10 @@ jobs:
               image: debian:12
 
           # X86
-          - os: macos-13
-            target: Macos
-            flavour: mac
-            name: Macos13
+          # - os: macos-13
+          #   target: Macos
+          #   flavour: mac
+          #   name: Macos13
 
           - os: macos-14
             target: Macos
@@ -148,10 +148,9 @@ jobs:
       - name: Install build dependencies
         if: ${{ matrix.flavour == 'mac' }}
         run: |
-          set -x
-          # export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
-          # echo "PATH=$PATH" >> $GITHUB_ENV
-          rm -rf /usr/local/bin/2to3-3.11
+          export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
+          echo "PATH=$PATH" >> $GITHUB_ENV
+
           brew install python@3.11 gcc make libev
 
       - name: Compile and build (Ubuntu/Debian)
