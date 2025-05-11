@@ -50,7 +50,7 @@ if [ "$(uname -s)" == "Darwin" ]; then
   ARCH=$(uname -m)
   MAJOR_VERSION=$(sw_vers -productVersion | cut -d '.' -f 1)
   LIB_DIR=$(ls -1 build/ | grep lib.)
-  PKG_VERSION=${PKG_VERSION}~${MAJOR_VERSION}
+  PKG_VERSION=${PKG_VERSION}~osx${MAJOR_VERSION}
 
   fpm -s dir -t zip -n axonops-cqlsh-${PKG_VERSION}-${ARCH} -v ${PKG_VERSION} -a $ARCH \
     --maintainer "AxonOps Limited <support@axonops.com>" \
