@@ -4,6 +4,8 @@
 .EXPORT_ALL_VARIABLES:
 
 CURRENT_FOLDER=$(shell basename "$$(pwd)")
+PYTHON_CMD ?= $(shell command -v python3 || command -v python)
+PYTHON_VERSION := $(shell $(PYTHON_CMD) -c "import sys; print(f'python{sys.version_info.major}.{sys.version_info.minor}')")
 
 # Configure-substituted variables
 PYTHON_INCLUDE = @PYTHON_INCLUDE@
@@ -27,13 +29,14 @@ LDFLAGS = @LDFLAGS@ -L$(LIBEV_LIB) -L$(GETTEXT_LIB)
 build: build_ext ## Build the application
 	@gcc $(CFLAGS) $(CPPFLAGS) \
 	main_wrapper.c $(shell cat sources.txt) \
-	$(LDFLAGS) -lev -lpython3.11 \
+	$(LDFLAGS) -lev -l$(PYTHON_VERSION) \
 	-o $(OUTPUT)
 
 test:
 	@echo $(DESTDIR)
 	@echo $(bindir)
 	@echo $(libdir)
+	@echo $(PYTHON_VERSION)
 
 # static: build_ext ## Build the application statically
 # 	@gcc $(CFLAGS) $(CPPFLAGS) -static \
@@ -48,7 +51,7 @@ install: build ## Install the application
 	cp -a build/lib.*/* $(DESTDIR)$(libdir)
 
 build_ext: ## Build Cython extensions
-	@python3 setup_build.py build_ext --inplace
+	@$(PYTHON_CMD) setup_build.py build_ext --inplace
 
 clean: ## Remove build artifacts
 	@rm -rf build
