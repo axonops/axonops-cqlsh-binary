@@ -31,7 +31,8 @@ jobs:
         if: ${{ matrix.flavour == 'mac' }}
         run: |
           export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
+          epxort PATH="/usr/local/opt/make/libexec/gnubin:$PATH"
           echo "PATH=$PATH" >> $GITHUB_ENV
 
-          brew install python@3.11 gcc make
+          brew install python@3.11 gcc make || /bin/true
           brew install libev
