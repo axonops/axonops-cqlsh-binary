@@ -184,8 +184,11 @@ axonops-cqlsh
 axonops-cqlsh.*
 
 cassandra/*.c
+cassandra/**/.c
 wcwidth/**/*.c
+wcwidth/*.c
 cqlshlib/**/*.c
+cqlshlib/*.c
 cqlsh.c
 
 *.pkg

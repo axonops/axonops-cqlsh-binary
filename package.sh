@@ -72,7 +72,6 @@ if [ "$(uname -s)" == "Darwin" ]; then
   fpm -s dir -t osxpkg -n axonops-cqlsh -v ${PKG_VERSION} -a $ARCH \
     --maintainer "AxonOps Limited <support@axonops.com>" \
     --description "CQL Shell for interacting with Apache Cassandra" \
-    --prefix /usr/local \
     axonops-cqlsh=/bin/axonops-cqlsh \
     build/${LIB_DIR}/=/lib
 fi

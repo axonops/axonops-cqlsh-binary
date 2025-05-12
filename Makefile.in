@@ -5,7 +5,9 @@
 
 CURRENT_FOLDER=$(shell basename "$$(pwd)")
 PYTHON_CMD ?= $(shell command -v python3 || command -v python)
-PYTHON_VERSION := $(shell $(PYTHON_CMD) -c "import sys; print(f'python{sys.version_info.major}.{sys.version_info.minor}')")
+PYTHON_LIB := $(shell $(PYTHON_CMD) -c "import sys; print(f'python{sys.version_info.major}.{sys.version_info.minor}')")
+PYTHON_VERSION := $(shell $(PYTHON_CMD) -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+PYTHON_FULL_VERSION := $(shell $(PYTHON_CMD) -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}')")
 
 # Configure-substituted variables
 PYTHON_INCLUDE = @PYTHON_INCLUDE@
@@ -24,12 +26,23 @@ libdir = @libdir@
 # Compiler flags from configure
 CFLAGS = @CFLAGS@ -DLIB_DIR=\"$(libdir)\" -fPIC -O2 -Wall
 CPPFLAGS = @CPPFLAGS@ -I$(PYTHON_INCLUDE) -I$(LIBEV_INCLUDE) -I$(GETTEXT_INCLUDE)
-LDFLAGS = @LDFLAGS@ -L$(LIBEV_LIB) -L$(GETTEXT_LIB)
-	
+LDFLAGS = @LDFLAGS@ -L$(LIBEV_LIB) -L$(GETTEXT_LIB) -l$(PYTHON_LIB) -lz -lev
+
+ifneq ($(OS),Windows_NT)
+	UNAME_S := $(shell uname -s)
+	ifeq ($(UNAME_S),Darwin)
+		BREWERY_HOME := $(shell brew --prefix)
+		LDFLAGS := $(BREWERY_HOME)/opt/python@$(PYTHON_VERSION)/Frameworks/Python.framework/Versions/$(PYTHON_VERSION)/Python \
+			$(BREWERY_HOME)/Cellar/python@$(PYTHON_VERSION)/$(PYTHON_FULL_VERSION)/Frameworks/Python.framework/Versions/$(PYTHON_VERSION)/lib/python$(PYTHON_VERSION)/config-$(PYTHON_VERSION)-darwin/libpython$(PYTHON_VERSION).a \
+			$(BREWERY_HOME)/opt/gettext/lib/libintl.a
+	endif
+endif
+
 build: build_ext ## Build the application
 	@gcc $(CFLAGS) $(CPPFLAGS) \
 	main_wrapper.c $(shell cat sources.txt) \
-	$(LDFLAGS) -lev -l$(PYTHON_VERSION) \
+	$(LDFLAGS) \
+	-lz -lm -ldl -liconv \
 	-o $(OUTPUT)
 
 test:
