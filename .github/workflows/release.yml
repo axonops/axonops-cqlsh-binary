@@ -283,7 +283,7 @@ jobs:
           PKG_DEPS: ${{ env.DEPS }}
 
       - name: Sign the Apple pkg
-        if: ${{ runner.flavour == 'mac' }}
+        if: ${{ matrix.flavour == 'mac' }}
         run: |
           for pkg_name in $(ls -1 *.pkg); do
             mv $pkg_name Unsigned-CQLSH.pkg
