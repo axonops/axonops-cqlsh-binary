@@ -54,12 +54,10 @@ if [ "$(uname -s)" == "Darwin" ]; then
 
 
   codesign --force --options runtime \
-    --keychain $KEYCHAIN_PATH \
     -s "Developer ID Application: AXONOPS Limited (UJ776LUP23)" axonops-cqlsh
 
   for f in $(find build/lib.macosx-15.0-arm64-cpython-311/ -name "*.so"); do
       codesign --force --options runtime \
-        --keychain $KEYCHAIN_PATH \
         -s "Developer ID Application: AXONOPS Limited (UJ776LUP23)" "$f"
   done
 
