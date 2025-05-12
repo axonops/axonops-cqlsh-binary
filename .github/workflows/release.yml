@@ -48,47 +48,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: [ubuntu-24.04-arm]
-            target: Linux
-            name: ubuntu24
-            flavour: debian
+          - os: macos-14
+            target: Macos
+            flavour: mac
             arch: arm64
-
-          - os: [ubuntu-24.04]
-            target: Linux
-            name: ubuntu24
-            flavour: debian
-            arch: amd64
-
-          - os: [ubuntu-22.04]
-            target: Linux
-            name: ubuntu22
-            flavour: debian
-            arch: amd64
-
-          - os: [ubuntu-22.04]
-            target: Linux
-            name: rocky9
-            flavour: redhat
-            arch: amd64
-            container:
-              image: rockylinux:9
-
-          - os: [ubuntu-22.04]
-            target: Linux
-            name: debian11
-            flavour: debian
-            arch: amd64
-            container:
-              image: debian:11
-
-          - os: [ubuntu-22.04]
-            target: Linux
-            name: debian12
-            flavour: debian
-            arch: amd64
-            container:
-              image: debian:12
+            name: Macos14
 
           # X86
           # - os: macos-13
@@ -96,17 +60,53 @@ jobs:
           #   flavour: mac
           #   name: Macos13
 
-          - os: macos-14
-            target: Macos
-            flavour: mac
-            arch: arm64
-            name: Macos14
+          # - os: [ubuntu-24.04-arm]
+          #   target: Linux
+          #   name: ubuntu24
+          #   flavour: debian
+          #   arch: arm64
 
-          - os: [self-hosted, Windows]
-            target: Windows
-            flavour: windows
-            name: Windows
-            arch: amd64
+          # - os: [ubuntu-24.04]
+          #   target: Linux
+          #   name: ubuntu24
+          #   flavour: debian
+          #   arch: amd64
+
+          # - os: [ubuntu-22.04]
+          #   target: Linux
+          #   name: ubuntu22
+          #   flavour: debian
+          #   arch: amd64
+
+          # - os: [ubuntu-22.04]
+          #   target: Linux
+          #   name: rocky9
+          #   flavour: redhat
+          #   arch: amd64
+          #   container:
+          #     image: rockylinux:9
+
+          # - os: [ubuntu-22.04]
+          #   target: Linux
+          #   name: debian11
+          #   flavour: debian
+          #   arch: amd64
+          #   container:
+          #     image: debian:11
+
+          # - os: [ubuntu-22.04]
+          #   target: Linux
+          #   name: debian12
+          #   flavour: debian
+          #   arch: amd64
+          #   container:
+          #     image: debian:12
+
+          # - os: [self-hosted, Windows]
+          #   target: Windows
+          #   flavour: windows
+          #   name: Windows
+          #   arch: amd64
 
     steps:
       - name: Checkout Repository
@@ -220,6 +220,30 @@ jobs:
           make -f Makefile.win build
         shell: cmd
 
+      - name: Decode and import Apple certificate
+        if: ${{ runner.flavour == 'mac' }}
+        run: |
+          # create variables
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          # import certificate and provisioning profile from secrets
+          echo -n "${{ secrets.APPLE_CERTIFICATE_BASE64 }}" | base64 --decode -o $CERTIFICATE_PATH
+
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # import certificate to keychain
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+
       - name: Windows package
         if: ${{ matrix.target == 'Windows' }}
         run: |
@@ -239,6 +263,22 @@ jobs:
             gem install --no-document fpm
           fi
           ./package.sh ${VERSION}
+
+      - name: Sign the Apple pkg
+        if: ${{ runner.flavour == 'mac' }}
+        run: |
+          for pkg_name in $(ls -1 *.pkg); do
+            mv $pkg_name Unsigned-CQLSH.pkg
+
+            productsign --sign "Developer ID Installer: AXONOPS Limited (UJ776LUP23)" Unsigned-CQLSH.pkg $pkg_name
+            rm -f Unsigned-CQLSH.pkg
+            #xcrun notarytool submit $pkg_name --apple-id $APPLE_ID --team-id $APPLE_TEAM_ID --password $APPLE_APP_SPECIFIC_PASSWORD --wait
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
       - name: Upload Artifacts
         uses: softprops/action-gh-release@v2

@@ -52,10 +52,24 @@ if [ "$(uname -s)" == "Darwin" ]; then
   LIB_DIR=$(ls -1 build/ | grep lib.)
   PKG_VERSION=${PKG_VERSION}~osx${MAJOR_VERSION}
 
+
+  codesign --force --options runtime -s "Developer ID Application: AXONOPS Limited (UJ776LUP23)" axonops-cqlsh
+
+  for f in $(find build/lib.macosx-15.0-arm64-cpython-311/ -name "*.so"); do
+      codesign --force --options runtime -s "Developer ID Application: AXONOPS Limited (UJ776LUP23)" "$f"
+  done
+
   fpm -s dir -t zip -n axonops-cqlsh-${PKG_VERSION}-${ARCH} -v ${PKG_VERSION} -a $ARCH \
     --maintainer "AxonOps Limited <support@axonops.com>" \
     --description "CQL Shell for interacting with Apache Cassandra" \
-    --prefix /opt/AxonOps \
+    --prefix AxonOps-CQLSH \
+    axonops-cqlsh=/bin/cqlsh \
+    build/${LIB_DIR}/=/lib
+
+  fpm -s dir -t osxpkg -n axonops-cqlsh-${PKG_VERSION}-${ARCH} -v ${PKG_VERSION} -a $ARCH \
+    --maintainer "AxonOps Limited <support@axonops.com>" \
+    --description "CQL Shell for interacting with Apache Cassandra" \
+    --prefix /usr/local \
     axonops-cqlsh=/bin/cqlsh \
     build/${LIB_DIR}/=/lib
 fi
