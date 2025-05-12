@@ -184,12 +184,21 @@ jobs:
           security list-keychain -d user -s $KEYCHAIN_PATH
 
           echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> $GITHUB_ENV
-          echo "KEYCHAIN_PASSWORD=$KEYCHAIN_PASSWORD" >> $GITHUB_ENV
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
           P12_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
 
+      - name: TEST keychain
+        run: |
+          echo $KEYCHAIN_PATH
+      - name: TEST keychain 2
+        run: |
+          echo $KEYCHAIN_PATH
+          exit 1
+        env:
+          KEYCHAIN_PATH: ${{ env.KEYCHAIN_PATH }}
+          
       - name: Compile and build (Ubuntu/Debian)
         if: ${{ matrix.target != 'Windows' }}
         run: |
