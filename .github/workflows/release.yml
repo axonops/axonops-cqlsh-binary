@@ -133,7 +133,7 @@ jobs:
 
       - name: Setup Python v3.11
         uses: actions/setup-python@v5
-        if: ${{ matrix.container == null && matrix.flavour != 'windows' }}
+        if: ${{ matrix.container == null && matrix.target == 'linux' }}
         with:
           python-version: 3.11
           cache: "pip"
@@ -167,6 +167,9 @@ jobs:
           # make is returning an error on macos-13 so it needs to be installed separeteley 
           brew install -v make
           brew install python@3.11 gcc libev
+
+          echo "PYTHON_HOME=$(brew --prefix python@3.11)/bin" >> $GITHUB_ENV
+          echo "PYTHON_CMD=$(brew --prefix python@3.11)/bin/python3" >> $GITHUB_ENV
           
 
       - name: Decode and import Apple certificate
@@ -226,15 +229,19 @@ jobs:
             echo "DEPS=python3.11-libs" >> $GITHUB_ENV
           fi
           
-          if command -v python3.11 &> /dev/null; then
-            PYTHON=$(command -v python3.11)
-          elif command -v python3 &> /dev/null; then
-            PYTHON=$(command -v python3)
-          elif command -v python &> /dev/null; then
-            PYTHON=$(command -v python)
+          if [ "$PYTHON_CMD" == "" ]; then
+            if command -v python3.11 &> /dev/null; then
+              PYTHON=$(command -v python3.11)
+            elif command -v python3 &> /dev/null; then
+              PYTHON=$(command -v python3)
+            elif command -v python &> /dev/null; then
+              PYTHON=$(command -v python)
+            else
+              echo "Python not found"
+              exit 1
+            fi
           else
-            echo "Python not found"
-            exit 1
+            PYTHON=$PYTHON_CMD
           fi
 
           $PYTHON -m venv venv
