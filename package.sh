@@ -26,10 +26,10 @@ if [ -f /etc/os-release ]; then
   if [ "$ID" == "debian" ]; then
     ARCH=$(dpkg --print-architecture)
     TARGET="deb"
-    DEPS="libpython3.11"
+    DEPS=${PKG_DEPS:-"libpython3.11"}
   else
     ARCH=$(uname -m)
-    DEPS="python3.11-libs"
+    DEPS=${PKG_DEPS:-"python3.11-libs"}
     TARGET="rpm"
   fi
   PKG_VERSION=${PKG_VERSION}~${ID}${VERSION_ID}
