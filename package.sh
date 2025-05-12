@@ -72,7 +72,6 @@ if [ "$(uname -s)" == "Darwin" ]; then
     --maintainer "AxonOps Limited <support@axonops.com>" \
     --description "CQL Shell for interacting with Apache Cassandra" \
     --prefix /usr/local \
-    --osxpkg-ownership com.axonops.cqlsh \
     axonops-cqlsh=/bin/cqlsh \
     build/${LIB_DIR}/=/lib
 fi
