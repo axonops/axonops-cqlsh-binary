@@ -26,7 +26,7 @@ libdir = @libdir@
 # Compiler flags from configure
 CFLAGS = @CFLAGS@ -DLIB_DIR=\"$(libdir)\" -fPIC -O2 -Wall
 CPPFLAGS = @CPPFLAGS@ -I$(PYTHON_INCLUDE) -I$(LIBEV_INCLUDE) -I$(GETTEXT_INCLUDE)
-LDFLAGS = @LDFLAGS@ -L$(LIBEV_LIB) -L$(GETTEXT_LIB) -l$(PYTHON_LIB) -lz -lev
+LDFLAGS = @LDFLAGS@ -L$(LIBEV_LIB) -L$(GETTEXT_LIB) -l$(PYTHON_LIB) -lev
 
 ifneq ($(OS),Windows_NT)
 	UNAME_S := $(shell uname -s)
