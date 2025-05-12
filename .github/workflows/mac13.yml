@@ -34,7 +34,8 @@ jobs:
           export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
           export PATH="/usr/local/opt/make/libexec/gnubin:$PATH"
           echo "PATH=$PATH" >> $GITHUB_ENV
+          python --version
 
-          brew install python@3.11 gcc
-          brew install make || /bin/true
+          brew install python@3.11 || /bin/true
+          brew install make gcc || /bin/true
           brew install libev
