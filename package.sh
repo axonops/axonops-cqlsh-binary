@@ -56,7 +56,7 @@ if [ "$(uname -s)" == "Darwin" ]; then
   codesign --force --options runtime \
     -s "Developer ID Application: AXONOPS Limited (UJ776LUP23)" axonops-cqlsh
 
-  for f in $(find ${LIB_DIR} -name "*.so"); do
+  for f in $(find . -name "*.so"); do
       codesign --force --options runtime \
         -s "Developer ID Application: AXONOPS Limited (UJ776LUP23)" "$f"
   done
