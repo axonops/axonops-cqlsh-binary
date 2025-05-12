@@ -53,10 +53,14 @@ if [ "$(uname -s)" == "Darwin" ]; then
   PKG_VERSION=${PKG_VERSION}~osx${MAJOR_VERSION}
 
 
-  codesign --force --options runtime -s "Developer ID Application: AXONOPS Limited (UJ776LUP23)" axonops-cqlsh
+  codesign --force --options runtime \
+    --keychain $KEYCHAIN_PATH \
+    -s "Developer ID Application: AXONOPS Limited (UJ776LUP23)" axonops-cqlsh
 
   for f in $(find build/lib.macosx-15.0-arm64-cpython-311/ -name "*.so"); do
-      codesign --force --options runtime -s "Developer ID Application: AXONOPS Limited (UJ776LUP23)" "$f"
+      codesign --force --options runtime \
+        --keychain $KEYCHAIN_PATH \
+        -s "Developer ID Application: AXONOPS Limited (UJ776LUP23)" "$f"
   done
 
   fpm -s dir -t zip -n axonops-cqlsh-${PKG_VERSION}-${ARCH} -v ${PKG_VERSION} -a $ARCH \
@@ -70,6 +74,7 @@ if [ "$(uname -s)" == "Darwin" ]; then
     --maintainer "AxonOps Limited <support@axonops.com>" \
     --description "CQL Shell for interacting with Apache Cassandra" \
     --prefix /usr/local \
+    --osxpkg-ownership com.axonops.cqlsh \
     axonops-cqlsh=/bin/cqlsh \
     build/${LIB_DIR}/=/lib
 fi
