@@ -40,9 +40,9 @@ if [ -f /etc/os-release ]; then
     --maintainer "AxonOps Limited <support@axonops.com>" \
     --description "CQL Shell for interacting with Apache Cassandra" \
     --deb-use-file-permissions \
-    -d libpython3.11 \
+    -d $DEPS \
     --prefix /opt/AxonOps \
-    axonops-cqlsh=/bin/cqlsh \
+    axonops-cqlsh=/bin/axonops-cqlsh \
     build/${LIB_DIR}/=/lib
 fi
 
@@ -65,13 +65,14 @@ if [ "$(uname -s)" == "Darwin" ]; then
     --maintainer "AxonOps Limited <support@axonops.com>" \
     --description "CQL Shell for interacting with Apache Cassandra" \
     --prefix AxonOps-CQLSH \
-    axonops-cqlsh=/bin/cqlsh \
+    axonops-cqlsh=/bin/axonops-cqlsh \
     build/${LIB_DIR}/=/lib
 
-  fpm -s dir -t osxpkg -n axonops-cqlsh-${PKG_VERSION}-${ARCH} -v ${PKG_VERSION} -a $ARCH \
+  rm -f axonops-cqlsh*.pkg UNSIGNED-axonops-cqlsh*pkg
+  $FPM -s dir -t osxpkg -n axonops-cqlsh -v ${PKG_VERSION} -a $ARCH \
     --maintainer "AxonOps Limited <support@axonops.com>" \
     --description "CQL Shell for interacting with Apache Cassandra" \
     --prefix /usr/local \
-    axonops-cqlsh=/bin/cqlsh \
+    axonops-cqlsh=/bin/axonops-cqlsh \
     build/${LIB_DIR}/=/lib
 fi

@@ -284,7 +284,7 @@ jobs:
 
             productsign --sign "Developer ID Installer: AXONOPS Limited (UJ776LUP23)" Unsigned-CQLSH.pkg $pkg_name
             rm -f Unsigned-CQLSH.pkg
-            #xcrun notarytool submit $pkg_name --apple-id $APPLE_ID --team-id $APPLE_TEAM_ID --password $APPLE_APP_SPECIFIC_PASSWORD --wait
+            xcrun notarytool submit $pkg_name --apple-id $APPLE_ID --team-id $APPLE_TEAM_ID --password $APPLE_APP_SPECIFIC_PASSWORD --wait
           done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
