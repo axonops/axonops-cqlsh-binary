@@ -48,11 +48,11 @@ jobs:
     strategy:
       matrix:
         include:
-          # - os: macos-14
-          #   target: Macos
-          #   flavour: mac
-          #   arch: arm64
-          #   name: Macos14
+          - os: macos-14
+            target: Macos
+            flavour: mac
+            arch: arm64
+            name: Macos14
 
           # X86
           - os: macos-13
@@ -61,53 +61,53 @@ jobs:
             name: Macos13
             arch: amd64
 
-          # - os: [ubuntu-24.04-arm]
-          #   target: Linux
-          #   name: ubuntu24
-          #   flavour: debian
-          #   arch: arm64
+          - os: [ubuntu-24.04-arm]
+            target: Linux
+            name: ubuntu24
+            flavour: debian
+            arch: arm64
 
-          # - os: [ubuntu-24.04]
-          #   target: Linux
-          #   name: ubuntu24
-          #   flavour: debian
-          #   arch: amd64
+          - os: [ubuntu-24.04]
+            target: Linux
+            name: ubuntu24
+            flavour: debian
+            arch: amd64
 
-          # - os: [ubuntu-22.04]
-          #   target: Linux
-          #   name: ubuntu22
-          #   flavour: debian
-          #   arch: amd64
+          - os: [ubuntu-22.04]
+            target: Linux
+            name: ubuntu22
+            flavour: debian
+            arch: amd64
 
-          # - os: [ubuntu-22.04]
-          #   target: Linux
-          #   name: rocky9
-          #   flavour: redhat
-          #   arch: amd64
-          #   container:
-          #     image: rockylinux:9
+          - os: [ubuntu-22.04]
+            target: Linux
+            name: rocky9
+            flavour: redhat
+            arch: amd64
+            container:
+              image: rockylinux:9
 
-          # - os: [ubuntu-22.04]
-          #   target: Linux
-          #   name: debian11
-          #   flavour: debian
-          #   arch: amd64
-          #   container:
-          #     image: debian:11
+          - os: [ubuntu-22.04]
+            target: Linux
+            name: debian11
+            flavour: debian
+            arch: amd64
+            container:
+              image: debian:11
 
-          # - os: [ubuntu-22.04]
-          #   target: Linux
-          #   name: debian12
-          #   flavour: debian
-          #   arch: amd64
-          #   container:
-          #     image: debian:12
+          - os: [ubuntu-22.04]
+            target: Linux
+            name: debian12
+            flavour: debian
+            arch: amd64
+            container:
+              image: debian:12
 
-          # - os: [self-hosted, Windows]
-          #   target: Windows
-          #   flavour: windows
-          #   name: Windows
-          #   arch: amd64
+          - os: [self-hosted, Windows]
+            target: Windows
+            flavour: windows
+            name: Windows
+            arch: amd64
 
     steps:
       - name: Checkout Repository
@@ -164,8 +164,9 @@ jobs:
           export PATH="/usr/local/opt/make/libexec/gnubin:$PATH"
           echo "PATH=$PATH" >> $GITHUB_ENV
 
-          brew install -v libev
-          brew install python@3.11 gcc make
+          # make is returning an error on macos-13 so it needs to be installed separeteley 
+          brew install -v make
+          brew install python@3.11 gcc libev
           
 
       - name: Decode and import Apple certificate
