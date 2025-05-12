@@ -48,17 +48,17 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macos-14
-            target: Macos
-            flavour: mac
-            arch: arm64
-            name: Macos14
-
-          # X86
-          # - os: macos-13
+          # - os: macos-14
           #   target: Macos
           #   flavour: mac
-          #   name: Macos13
+          #   arch: arm64
+          #   name: Macos14
+
+          # X86
+          - os: macos-13
+            target: Macos
+            flavour: mac
+            name: Macos13
 
           # - os: [ubuntu-24.04-arm]
           #   target: Linux
@@ -157,8 +157,10 @@ jobs:
 
       - name: Install build dependencies
         if: ${{ matrix.flavour == 'mac' }}
+        continue-on-error: true
         run: |
           export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
+          export PATH="/usr/local/opt/make/libexec/gnubin:$PATH"
           echo "PATH=$PATH" >> $GITHUB_ENV
 
           brew install python@3.11 gcc make
