@@ -59,6 +59,7 @@ jobs:
             target: Macos
             flavour: mac
             name: Macos13
+            arch: amd64
 
           # - os: [ubuntu-24.04-arm]
           #   target: Linux
@@ -163,8 +164,9 @@ jobs:
           export PATH="/usr/local/opt/make/libexec/gnubin:$PATH"
           echo "PATH=$PATH" >> $GITHUB_ENV
 
+          brew install -v libev
           brew install python@3.11 gcc make
-          brew install libev
+          
 
       - name: Decode and import Apple certificate
         if: ${{ matrix.flavour == 'mac' }}
