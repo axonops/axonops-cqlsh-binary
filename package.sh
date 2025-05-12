@@ -26,10 +26,10 @@ if [ -f /etc/os-release ]; then
   if [ "$ID" == "debian" ]; then
     ARCH=$(dpkg --print-architecture)
     TARGET="deb"
-    DEPS="libpython3.11"
+    DEPS=${PKG_DEPS:-"libpython3.11"}
   else
     ARCH=$(uname -m)
-    DEPS="python3.11-libs"
+    DEPS=${PKG_DEPS:-"python3.11-libs"}
     TARGET="rpm"
   fi
   PKG_VERSION=${PKG_VERSION}~${ID}${VERSION_ID}
@@ -40,9 +40,9 @@ if [ -f /etc/os-release ]; then
     --maintainer "AxonOps Limited <support@axonops.com>" \
     --description "CQL Shell for interacting with Apache Cassandra" \
     --deb-use-file-permissions \
-    -d libpython3.11 \
+    -d $DEPS \
     --prefix /opt/AxonOps \
-    axonops-cqlsh=/bin/cqlsh \
+    axonops-cqlsh=/bin/axonops-cqlsh \
     build/${LIB_DIR}/=/lib
 fi
 
@@ -52,10 +52,27 @@ if [ "$(uname -s)" == "Darwin" ]; then
   LIB_DIR=$(ls -1 build/ | grep lib.)
   PKG_VERSION=${PKG_VERSION}~osx${MAJOR_VERSION}
 
+
+  codesign --force --options runtime \
+    -s "Developer ID Application: AXONOPS Limited (UJ776LUP23)" axonops-cqlsh
+
+  for f in $(find . -name "*.so"); do
+      codesign --force --options runtime \
+        -s "Developer ID Application: AXONOPS Limited (UJ776LUP23)" "$f"
+  done
+
   fpm -s dir -t zip -n axonops-cqlsh-${PKG_VERSION}-${ARCH} -v ${PKG_VERSION} -a $ARCH \
     --maintainer "AxonOps Limited <support@axonops.com>" \
     --description "CQL Shell for interacting with Apache Cassandra" \
-    --prefix /opt/AxonOps \
-    axonops-cqlsh=/bin/cqlsh \
+    --prefix AxonOps-CQLSH \
+    axonops-cqlsh=/bin/axonops-cqlsh \
+    build/${LIB_DIR}/=/lib
+
+  rm -f axonops-cqlsh*.pkg UNSIGNED-axonops-cqlsh*pkg
+  fpm -s dir -t osxpkg -n axonops-cqlsh -v ${PKG_VERSION} -a $ARCH \
+    --maintainer "AxonOps Limited <support@axonops.com>" \
+    --description "CQL Shell for interacting with Apache Cassandra" \
+    --prefix /usr/local \
+    axonops-cqlsh=/bin/axonops-cqlsh \
     build/${LIB_DIR}/=/lib
 fi

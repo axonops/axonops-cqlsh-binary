@@ -187,3 +187,5 @@ cassandra/*.c
 wcwidth/**/*.c
 cqlshlib/**/*.c
 cqlsh.c
+
+*.pkg
