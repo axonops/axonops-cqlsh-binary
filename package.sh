@@ -61,7 +61,7 @@ if [ "$(uname -s)" == "Darwin" ]; then
         -s "Developer ID Application: AXONOPS Limited (UJ776LUP23)" "$f"
   done
 
-  fpm -s dir -t zip -n axonops-cqlsh-${PKG_VERSION}-${ARCH} -v ${PKG_VERSION} -a $ARCH \
+  $FPM -s dir -t zip -n axonops-cqlsh-${PKG_VERSION}-${ARCH} -v ${PKG_VERSION} -a $ARCH \
     --maintainer "AxonOps Limited <support@axonops.com>" \
     --description "CQL Shell for interacting with Apache Cassandra" \
     --prefix AxonOps-CQLSH \
