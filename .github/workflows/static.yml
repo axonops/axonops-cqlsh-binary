@@ -82,7 +82,6 @@ jobs:
         if: ${{ matrix.flavour == 'mac' }}
         continue-on-error: true
         run: |
-          set -x
           export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
           export PATH="/usr/local/opt/make/libexec/gnubin:$PATH"
           echo "PATH=$PATH" >> $GITHUB_ENV
@@ -91,20 +90,22 @@ jobs:
           brew install -v make
           brew install gcc libev
 
-          echo "PYTHON_HOME=$(brew --prefix python@3.11)/bin" >> $GITHUB_ENV
-          echo "PYTHON_CMD=$(command -v python3.11)" >> $GITHUB_ENV
-
+      - name: Try to figure out Python variables in Mac
+        if: ${{ matrix.flavour == 'mac' }}
+        run: |
+          set -x
           export PYTHON_CMD=$(command -v python3.11)
           export PYTHON_VERSION=$(python3.11 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
           export PYTHON_HOME=/Library/Frameworks/Python.framework/Versions/3.11
 
-          python3.11-config --includes
-          python3.11-config --cflags
-          find $PYTHON_HOME -name "libpython*.a"
-          find $PYTHON_HOME -name "Python"
+          PYTHON_STATIC_LIB=$(find $PYTHON_HOME -name "libpython*.a")
+          PYTHON_STATIC=$(find $PYTHON_HOME -name "Python")
 
-          exit 1
-          
+          echo "PYTHON_CMD=$PYTHON_CMD" >> $GITHUB_ENV
+          echo "PYTHON_VERSION=$PYTHON_VERSION" >> $GITHUB_ENV
+          echo "PYTHON_HOME=$PYTHON_HOME" >> $GITHUB_ENV
+          echo "PYTHON_STATIC_LIB=$PYTHON_STATIC_LIB" >> $GITHUB_ENV
+          echo "PYTHON_STATIC=$PYTHON_STATIC" >> $GITHUB_ENV
 
       - name: Decode and import Apple certificate
         if: ${{ matrix.flavour == 'mac' }}
