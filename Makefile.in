@@ -34,8 +34,8 @@ ifneq ($(OS),Windows_NT)
 	ifeq ($(UNAME_S),Darwin)
 		BREWERY_HOME := $(shell brew --prefix)
 		PYTHON_HOME := $(shell brew --prefix python@$(PYTHON_VERSION))
-		PYTHON_STATIC := $(shell find $(PYTHON_HOME) -name "Python")
-		PYTHON_STATIC_LIB := $(shell find $(PYTHON_HOME) -name "libpython*.a")
+		PYTHON_STATIC := $(PYTHON_HOME)/opt/python@$(PYTHON_VERSION)/Frameworks/Python.framework/Versions/$(PYTHON_VERSION)/Python
+		PYTHON_STATIC_LIB := $(PYTHON_HOME)/Frameworks/Python.framework/Versions/$(PYTHON_VERSION)/lib/python$(PYTHON_VERSION)/config-$(PYTHON_VERSION)-darwin/libpython$(PYTHON_VERSION).a
 		LDFLAGS := $(PYTHON_STATIC_LIB) $(PYTHON_STATIC) \
 			$(BREWERY_HOME)/opt/gettext/lib/libintl.a
 	endif
