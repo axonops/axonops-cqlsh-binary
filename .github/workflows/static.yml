@@ -1,4 +1,4 @@
-name: Release Workbench
+name: Debug Static Build
 
 on:
   push:
