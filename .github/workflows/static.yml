@@ -95,10 +95,12 @@ jobs:
           echo "PYTHON_CMD=$(command -v python3.11)" >> $GITHUB_ENV
 
           export PYTHON_CMD=$(command -v python3.11)
-          export PYTHON_VERSION=$($(PYTHON_CMD) -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+          export PYTHON_VERSION=$(python3.11 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
           export PYTHON_HOME=/Library/Frameworks/Python.framework/Versions/3.11
 
-          find $PYTHON_HOME -name "Python.h"
+          python3.11-config --includes
+          python3.11-config --cflags
+          find $PYTHON_HOME -name "libpython*.a"
           find $PYTHON_HOME -name "Python"
 
           exit 1
