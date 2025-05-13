@@ -5,13 +5,13 @@
 
 CURRENT_FOLDER=$(shell basename "$$(pwd)")
 PYTHON_CMD ?= $(shell command -v python3 || command -v python)
-PYTHON_LIB := $(shell $(PYTHON_CMD) -c "import sys; print(f'python{sys.version_info.major}.{sys.version_info.minor}')")
+PYTHON_LIB_DYN := $(shell $(PYTHON_CMD) -c "import sys; print(f'python{sys.version_info.major}.{sys.version_info.minor}')")
 PYTHON_VERSION := $(shell $(PYTHON_CMD) -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
 PYTHON_FULL_VERSION := $(shell $(PYTHON_CMD) -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}')")
 
 # Configure-substituted variables
 PYTHON_INCLUDE = @PYTHON_INCLUDE@
-PYTHON_LIB = @PYTHON_LIB@
+PYTHON_LIB = @PYTHON_LIB@ -l$(PYTHON_LIB_DYN)
 LIBEV_INCLUDE = @LIBEV_INCLUDE@
 LIBEV_LIB = @LIBEV_LIB@
 GETTEXT_INCLUDE = @GETTEXT_INCLUDE@
@@ -26,7 +26,7 @@ libdir = @libdir@
 # Compiler flags from configure
 CFLAGS = @CFLAGS@ -DLIB_DIR=\"$(libdir)\" -fPIC -O2 -Wall
 CPPFLAGS = @CPPFLAGS@ -I$(PYTHON_INCLUDE) -I$(LIBEV_INCLUDE) -I$(GETTEXT_INCLUDE)
-LDFLAGS = @LDFLAGS@ -L$(LIBEV_LIB) -L$(GETTEXT_LIB) -l$(PYTHON_LIB) -lev -lz
+LDFLAGS = @LDFLAGS@ -L$(LIBEV_LIB) -L$(GETTEXT_LIB) -lev -lz $(PYTHON_LIB)
 
 # for Mac, we compile statically
 ifneq ($(OS),Windows_NT)

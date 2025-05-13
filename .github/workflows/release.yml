@@ -199,7 +199,7 @@ jobs:
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
 
           
-      - name: Compile and build (Ubuntu/Debian)
+      - name: Compile and build (Ubuntu/Debian/Mac)
         if: ${{ matrix.target != 'Windows' }}
         run: |
           set -ex
