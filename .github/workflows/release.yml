@@ -55,11 +55,11 @@ jobs:
             name: Macos14
 
           # X86
-          - os: macos-13
-            target: Macos
-            flavour: mac
-            name: Macos13
-            arch: amd64
+          # - os: macos-13
+          #   target: Macos
+          #   flavour: mac
+          #   name: Macos13
+          #   arch: amd64
 
           - os: [ubuntu-24.04-arm]
             target: Linux
@@ -143,18 +143,18 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
-      # - name: Cache Homebrew Bundler RubyGems
-      #   if: ${{ matrix.flavour == 'mac' }}
-      #   id: cache
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ${{ steps.set-up-homebrew.outputs.gems-path }}
-      #     key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
-      #     restore-keys: ${{ runner.os }}-rubygems-
+      - name: Cache Homebrew Bundler RubyGems
+        if: ${{ matrix.flavour == 'mac' }}
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.set-up-homebrew.outputs.gems-path }}
+          key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
+          restore-keys: ${{ runner.os }}-rubygems-
 
-      # - name: Install Homebrew Bundler RubyGems
-      #   if: ${{ matrix.flavour == 'mac' && steps.cache.outputs.cache-hit != 'true' }}
-      #   run: brew install-bundler-gems
+      - name: Install Homebrew Bundler RubyGems
+        if: ${{ matrix.flavour == 'mac' && steps.cache.outputs.cache-hit != 'true' }}
+        run: brew install-bundler-gems
 
       - name: Install build dependencies
         if: ${{ matrix.flavour == 'mac' }}

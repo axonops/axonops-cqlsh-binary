@@ -36,14 +36,13 @@ ifneq ($(OS),Windows_NT)
 		PYTHON_HOME := $(shell brew --prefix python@$(PYTHON_VERSION))
 		PYTHON_STATIC := $(shell find $(PYTHON_HOME) -name "Python")
 		PYTHON_STATIC_LIB := $(shell find $(PYTHON_HOME) -name "libpython*.a")
-		LDFLAGS := $(BREWERY_HOME)/opt/python@$(PYTHON_VERSION)/Frameworks/Python.framework/Versions/$(PYTHON_VERSION)/Python \
-			$(PYTHON_STATIC_LIB) $(PYTHON_STATIC) \
+		LDFLAGS := $(PYTHON_STATIC_LIB) $(PYTHON_STATIC) \
 			$(BREWERY_HOME)/opt/gettext/lib/libintl.a
 	endif
 endif
 
 build: build_ext ## Build the application
-	@gcc $(CFLAGS) $(CPPFLAGS) \
+	gcc $(CFLAGS) $(CPPFLAGS) \
 	main_wrapper.c $(shell cat sources.txt) \
 	$(LDFLAGS) \
 	-o $(OUTPUT)
