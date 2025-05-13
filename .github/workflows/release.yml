@@ -166,8 +166,8 @@ jobs:
 
           # make is returning an error on macos-13 so it needs to be installed separeteley 
           brew install -v make
-          brew reinstall libev gettext
-          brew reinstall gcc
+          arch -arm64 brew reinstall libev gettext
+          arch -arm64 brew reinstall gcc
 
       - name: Try to figure out Python variables in Mac
         if: ${{ matrix.flavour == 'mac' }}
@@ -276,7 +276,7 @@ jobs:
           fi
           $MAKE clean
           $MAKE test
-          $MAKE -j4 PYTHON_CMD=${PYTHON}
+          arch -arm64 $MAKE -j4 PYTHON_CMD=${PYTHON}
 
       - name: Compile and build (Windows)
         if: ${{ matrix.target == 'Windows' }}
