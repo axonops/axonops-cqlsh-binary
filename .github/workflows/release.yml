@@ -143,18 +143,18 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
-      - name: Cache Homebrew Bundler RubyGems
-        if: ${{ matrix.flavour == 'mac' }}
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.set-up-homebrew.outputs.gems-path }}
-          key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
-          restore-keys: ${{ runner.os }}-rubygems-
+      # - name: Cache Homebrew Bundler RubyGems
+      #   if: ${{ matrix.flavour == 'mac' }}
+      #   id: cache
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ${{ steps.set-up-homebrew.outputs.gems-path }}
+      #     key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
+      #     restore-keys: ${{ runner.os }}-rubygems-
 
-      - name: Install Homebrew Bundler RubyGems
-        if: ${{ matrix.flavour == 'mac' && steps.cache.outputs.cache-hit != 'true' }}
-        run: brew install-bundler-gems
+      # - name: Install Homebrew Bundler RubyGems
+      #   if: ${{ matrix.flavour == 'mac' && steps.cache.outputs.cache-hit != 'true' }}
+      #   run: brew install-bundler-gems
 
       - name: Install build dependencies
         if: ${{ matrix.flavour == 'mac' }}
@@ -166,7 +166,8 @@ jobs:
 
           # make is returning an error on macos-13 so it needs to be installed separeteley 
           brew install -v make
-          arch -arch arm64 brew install gcc libev gettext
+          arch -arch arm64 brew reinstall libev gettext
+          arch -arch arm64 brew install gcc
 
       - name: Try to figure out Python variables in Mac
         if: ${{ matrix.flavour == 'mac' }}
@@ -177,7 +178,7 @@ jobs:
           export PYTHON_HOME=/Library/Frameworks/Python.framework/Versions/3.11
 
           PYTHON_STATIC_LIB=$(find $PYTHON_HOME -name "libpython*.a")
-          PYTHON_STATIC=/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Python
+          PYTHON_STATIC=${PYTHON_HOME)/Python
 
           echo "BREWERY_HOME=$(brew --prefix)" >> $GITHUB_ENV
           echo "PYTHON_CMD=$PYTHON_CMD" >> $GITHUB_ENV
