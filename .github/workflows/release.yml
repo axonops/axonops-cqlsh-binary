@@ -173,12 +173,13 @@ jobs:
         if: ${{ matrix.flavour == 'mac' }}
         run: |
           set -x
-          export PYTHON_CMD=$(command -v python3.11)
-          export PYTHON_VERSION=$(python3.11 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
-          export PYTHON_HOME=/Library/Frameworks/Python.framework/Versions/3.11
+          export PYTHON_VERSION=3.11
+
+          export PYTHON_CMD=$(command -v python${PYTHON_VERSION})
+          export PYTHON_HOME=/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}
 
           PYTHON_STATIC_LIB=$(find $PYTHON_HOME -name "libpython*.a")
-          PYTHON_STATIC=${PYTHON_HOME)/Python
+          PYTHON_STATIC=${PYTHON_HOME}/Python
 
           echo "BREWERY_HOME=$(brew --prefix)" >> $GITHUB_ENV
           echo "PYTHON_CMD=$PYTHON_CMD" >> $GITHUB_ENV
