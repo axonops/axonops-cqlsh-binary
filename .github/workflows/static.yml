@@ -2,7 +2,7 @@ name: Release Workbench
 
 on:
   push:
-    tags:
+    branches:
       - 'static'
 
 defaults:
