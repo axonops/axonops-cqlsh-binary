@@ -101,6 +101,7 @@ jobs:
           PYTHON_STATIC_LIB=$(find $PYTHON_HOME -name "libpython*.a")
           PYTHON_STATIC=/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Python
 
+          echo "BREWERY_HOME=$(brew --prefix)" >> $GITHUB_ENV
           echo "PYTHON_CMD=$PYTHON_CMD" >> $GITHUB_ENV
           echo "PYTHON_VERSION=$PYTHON_VERSION" >> $GITHUB_ENV
           echo "PYTHON_HOME=$PYTHON_HOME" >> $GITHUB_ENV
