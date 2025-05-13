@@ -166,7 +166,7 @@ jobs:
 
           # make is returning an error on macos-13 so it needs to be installed separeteley 
           brew install -v make
-          brew install gcc libev gettext
+          arch -arch arm64 brew install gcc libev gettext
 
       - name: Try to figure out Python variables in Mac
         if: ${{ matrix.flavour == 'mac' }}
