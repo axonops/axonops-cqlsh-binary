@@ -178,8 +178,8 @@ jobs:
           export PYTHON_CMD=$(command -v python${PYTHON_VERSION})
           export PYTHON_HOME=/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}
 
-          PYTHON_STATIC_LIB=$(find $PYTHON_HOME -name "libpython*.a")
-          PYTHON_STATIC=${PYTHON_HOME}/Python
+          PYTHON_STATIC=$(find $PYTHON_HOME -name "libpython*.a")
+          PYTHON_STATIC_LIB=$(realpath $PYTHON_STATIC)
 
           echo "BREWERY_HOME=$(brew --prefix)" >> $GITHUB_ENV
           echo "PYTHON_CMD=$PYTHON_CMD" >> $GITHUB_ENV

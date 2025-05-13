@@ -1,4 +1,3 @@
-# setup.py
 from setuptools import setup, Extension, find_packages
 from Cython.Build import cythonize
 from Cython.Distutils import build_ext
@@ -24,14 +23,48 @@ cassandra_files = find_python_files('cassandra')
 cqlshlib_files = find_python_files('cqlshlib')
 wcwidth_files = find_python_files('wcwidth')
 
+# Get Python static library path from environment
+mac_link_args = []
+mac_extra_objects = []
+PYTHON_LIB_DIR = ''
+BREWERY_HOME = os.getenv('BREWERY_HOME', '')
+PYTHON_STATIC = os.getenv('PYTHON_STATIC_LIB', '')
+if PYTHON_STATIC:
+    PYTHON_LIB_DIR = os.path.dirname(PYTHON_STATIC)
+
+    # macOS specific link arguments
+    mac_link_args = [
+        "-Wl,-all_load",  # Load all objects from static libraries
+        "-Wl,-search_paths_first",  # Prioritize static libraries
+        "-Wl,-dead_strip"  # Remove unused code
+    ]
+    mac_extra_objects = [
+        PYTHON_STATIC,
+        f"{BREWERY_HOME}/opt/gettext/lib/libintl.a",
+    ]
+
 # Define extensions for each Python file
-ext_modules = [
-    Extension(module, [module.replace('.', os.path.sep) + '.py'])
-    for module in cqlshlib_files + cassandra_files + wcwidth_files
-]
+ext_modules = []
+for module in cqlshlib_files + cassandra_files + wcwidth_files:
+    ext_modules.append(
+        Extension(
+            module, 
+            [module.replace('.', os.path.sep) + '.py'],
+            extra_objects=mac_extra_objects,
+            extra_link_args=mac_link_args,
+            library_dirs=[PYTHON_LIB_DIR],
+        )
+    )
+
 # Add the main script
 ext_modules.append(
-    Extension('cqlsh_main', ['cqlsh.py']),
+    Extension(
+        'cqlsh_main', 
+        ['cqlsh.py'],
+        extra_objects=mac_extra_objects,
+        extra_link_args=mac_link_args,
+        library_dirs=[PYTHON_LIB_DIR],
+    )
 )
 
 setup(
@@ -50,6 +83,5 @@ setup(
     author_email="support@axonops.com",
     description="cqlsh is a Python-based command-line client for running CQL commands on a cassandra cluster.",
     keywords=["cql", "cassandra", "cqlsh", "axonops"],
-    url="https://bitbucket.org/digitalisio/axonops-cqlsh-binary/",
+    url="https://github.com/axonops/axonops-cqlsh-binary",
 )
-

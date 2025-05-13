@@ -32,7 +32,9 @@ LDFLAGS = @LDFLAGS@ -L$(LIBEV_LIB) -L$(GETTEXT_LIB) -lev -lz $(PYTHON_LIB)
 ifneq ($(OS),Windows_NT)
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S),Darwin)
-		LDFLAGS := $(PYTHON_STATIC_LIB) $(PYTHON_STATIC) \
+		BREWERY_HOME := $(shell brew --prefix)
+		LDFLAGS := -Wl,-all_load -Wl,-search_paths_first -Wl,-dead_strip \
+			$(PYTHON_STATIC_LIB) \
 			$(BREWERY_HOME)/opt/gettext/lib/libintl.a
 	endif
 endif
