@@ -264,7 +264,7 @@ jobs:
           export PYTHON=$(pwd)/venv/bin/python
           $PYTHON -m ensurepip
 
-          [ "${{ matrix.flavour }}" == "readht" ] && $PYTHON -m pip install setuptools
+          [ "${{ matrix.flavour }}" == "redhat" ] && $PYTHON -m pip install setuptools
           $PYTHON -m pip install cython
 
           ./configure
@@ -276,7 +276,11 @@ jobs:
           fi
           $MAKE clean
           $MAKE test
-          arch -arm64 $MAKE -j4 PYTHON_CMD=${PYTHON}
+          if [ "${{ matrix.flavour }}" == "mac" ]; then
+            arch -arm64 $MAKE -j4 PYTHON_CMD=${PYTHON}
+          else
+            $MAKE -j4 PYTHON_CMD=${PYTHON}
+          fi
 
       - name: Compile and build (Windows)
         if: ${{ matrix.target == 'Windows' }}
