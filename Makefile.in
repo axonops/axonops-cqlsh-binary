@@ -59,11 +59,11 @@ test:
 	@echo $(GETTEXT_INCLUDE)
 	@echo $(GETTEXT_LIB)
 	@echo $(OUTPUT)
-	@echo $(PYTHON_STATIC_LIB)
-	@echo $(PYTHON_STATIC)
-	@echo $(PYTHON_LIB_DYN)
-	@echo $(PYTHON_FULL_VERSION)
-	@echo $(PYTHON_HOME)
+	@echo PYTHON_STATIC_LIB=$(PYTHON_STATIC_LIB)
+	@echo PYTHON_STATIC=$(PYTHON_STATIC)
+	@echo PYTHON_LIB_DYN=$(PYTHON_LIB_DYN)
+	@echo PYTHON_FULL_VERSION=$(PYTHON_FULL_VERSION)
+	@echo PYTHON_HOME=$(PYTHON_HOME)
 
 install: build ## Install the application
 	install -d $(DESTDIR)$(bindir)
