@@ -61,53 +61,53 @@ jobs:
           #   name: Macos13
           #   arch: amd64
 
-          - os: [ubuntu-24.04-arm]
-            target: Linux
-            name: ubuntu24
-            flavour: debian
-            arch: arm64
+          # - os: [ubuntu-24.04-arm]
+          #   target: Linux
+          #   name: ubuntu24
+          #   flavour: debian
+          #   arch: arm64
 
-          - os: [ubuntu-24.04]
-            target: Linux
-            name: ubuntu24
-            flavour: debian
-            arch: amd64
+          # - os: [ubuntu-24.04]
+          #   target: Linux
+          #   name: ubuntu24
+          #   flavour: debian
+          #   arch: amd64
 
-          - os: [ubuntu-22.04]
-            target: Linux
-            name: ubuntu22
-            flavour: debian
-            arch: amd64
+          # - os: [ubuntu-22.04]
+          #   target: Linux
+          #   name: ubuntu22
+          #   flavour: debian
+          #   arch: amd64
 
-          - os: [ubuntu-22.04]
-            target: Linux
-            name: rocky9
-            flavour: redhat
-            arch: amd64
-            container:
-              image: rockylinux:9
+          # - os: [ubuntu-22.04]
+          #   target: Linux
+          #   name: rocky9
+          #   flavour: redhat
+          #   arch: amd64
+          #   container:
+          #     image: rockylinux:9
 
-          - os: [ubuntu-22.04]
-            target: Linux
-            name: debian11
-            flavour: debian
-            arch: amd64
-            container:
-              image: debian:11
+          # - os: [ubuntu-22.04]
+          #   target: Linux
+          #   name: debian11
+          #   flavour: debian
+          #   arch: amd64
+          #   container:
+          #     image: debian:11
 
-          - os: [ubuntu-22.04]
-            target: Linux
-            name: debian12
-            flavour: debian
-            arch: amd64
-            container:
-              image: debian:12
+          # - os: [ubuntu-22.04]
+          #   target: Linux
+          #   name: debian12
+          #   flavour: debian
+          #   arch: amd64
+          #   container:
+          #     image: debian:12
 
-          - os: [self-hosted, Windows]
-            target: Windows
-            flavour: windows
-            name: Windows
-            arch: amd64
+          # - os: [self-hosted, Windows]
+          #   target: Windows
+          #   flavour: windows
+          #   name: Windows
+          #   arch: amd64
 
     steps:
       - name: Checkout Repository
@@ -166,8 +166,8 @@ jobs:
 
           # make is returning an error on macos-13 so it needs to be installed separeteley 
           brew install -v make
-          arch -arm64 brew reinstall libev gettext
-          arch -arm64 brew reinstall gcc
+          brew reinstall libev gettext
+          brew reinstall gcc
 
       - name: Try to figure out Python variables in Mac
         if: ${{ matrix.flavour == 'mac' }}
@@ -268,7 +268,7 @@ jobs:
           $PYTHON -m pip install cython
 
           ./configure
-
+          
           if command -v gmake &> /dev/null; then
             MAKE=$(command -v gmake)
           else
@@ -276,11 +276,7 @@ jobs:
           fi
           $MAKE clean
           $MAKE test
-          if [ "${{ matrix.flavour }}" == "mac" ]; then
-            arch -arm64 $MAKE -j4 PYTHON_CMD=${PYTHON}
-          else
-            $MAKE -j4 PYTHON_CMD=${PYTHON}
-          fi
+          $MAKE -j4 PYTHON_CMD=${PYTHON}
 
       - name: Compile and build (Windows)
         if: ${{ matrix.target == 'Windows' }}

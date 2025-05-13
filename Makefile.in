@@ -24,7 +24,7 @@ bindir = @bindir@
 libdir = @libdir@
 
 # Compiler flags from configure
-CFLAGS = @CFLAGS@ -DLIB_DIR=\"$(libdir)\" -fPIC -O2 -Wall
+CFLAGS = @CFLAGS@ -DLIB_DIR=\"$(libdir)\" -fPIC -O2 -Wall -arch $(shell uname -m)
 CPPFLAGS = @CPPFLAGS@ -I$(PYTHON_INCLUDE) -I$(LIBEV_INCLUDE) -I$(GETTEXT_INCLUDE)
 LDFLAGS = @LDFLAGS@ -L$(LIBEV_LIB) -L$(GETTEXT_LIB) -lev -lz $(PYTHON_LIB)
 
