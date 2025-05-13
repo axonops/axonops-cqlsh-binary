@@ -1,0 +1,247 @@
+name: Release Workbench
+
+on:
+  push:
+    tags:
+      - 'static'
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    name: Build on ${{ matrix.container && matrix.container.image || matrix.name }} (${{ matrix.arch }})
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container && matrix.container || null }}
+    strategy:
+      matrix:
+        include:
+          - os: macos-14
+            target: Macos
+            flavour: mac
+            arch: arm64
+            name: Macos14
+
+          # X86
+          # - os: macos-13
+          #   target: Macos
+          #   flavour: mac
+          #   name: Macos13
+          #   arch: amd64
+
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Get versions
+        if: ${{ github.ref_name != 'develop' && matrix.target != 'Windows' }}
+        run: |
+          echo "VERSION=$(echo $GITHUB_REF_NAME | sed 's/v//')" >> $GITHUB_ENV
+
+      - name: Get versions (Windows)
+        if: ${{ github.ref_name != 'develop' && matrix.target == 'Windows' }}
+        run: |
+          $VERSION = $env:GITHUB_REF_NAME -replace '^v', ''
+          echo "VERSION=$VERSION" >> $env:GITHUB_ENV
+        shell: powershell
+
+      - name: RedHat pre-reqs
+        if: ${{ matrix.flavour == 'redhat' }}
+        run: |
+          dnf -y install epel-release
+          dnf -y install lsb_release
+
+      - name: Setup Python v3.11
+        uses: actions/setup-python@v5
+        if: ${{ matrix.container == null && matrix.target == 'linux' }}
+        with:
+          python-version: 3.11
+          cache: "pip"
+
+      - name: Set up Homebrew
+        if: ${{ matrix.flavour == 'mac' }}
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Cache Homebrew Bundler RubyGems
+        if: ${{ matrix.flavour == 'mac' }}
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.set-up-homebrew.outputs.gems-path }}
+          key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
+          restore-keys: ${{ runner.os }}-rubygems-
+
+      - name: Install Homebrew Bundler RubyGems
+        if: ${{ matrix.flavour == 'mac' && steps.cache.outputs.cache-hit != 'true' }}
+        run: brew install-bundler-gems
+
+      - name: Install build dependencies
+        if: ${{ matrix.flavour == 'mac' }}
+        continue-on-error: true
+        run: |
+          set -x
+          export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
+          export PATH="/usr/local/opt/make/libexec/gnubin:$PATH"
+          echo "PATH=$PATH" >> $GITHUB_ENV
+
+          # make is returning an error on macos-13 so it needs to be installed separeteley 
+          brew install -v make
+          brew install python@3.11 gcc libev
+
+          echo "PYTHON_HOME=$(brew --prefix python@3.11)/bin" >> $GITHUB_ENV
+          echo "PYTHON_CMD=$(brew --prefix python@3.11)/bin/python3.11" >> $GITHUB_ENV
+          
+
+      - name: Decode and import Apple certificate
+        if: ${{ matrix.flavour == 'mac' }}
+        run: |
+          # create variables
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          # import certificate and provisioning profile from secrets
+          echo -n "${{ secrets.APPLE_CERTIFICATE_BASE64 }}" | base64 --decode -o $CERTIFICATE_PATH
+
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH > /dev/null 2>&1
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH > /dev/null 2>&1
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH > /dev/null 2>&1
+
+          # import certificate to keychain
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH > /dev/null 2>&1
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH > /dev/null 2>&1
+          security list-keychain -d user -s $KEYCHAIN_PATH > /dev/null 2>&1
+
+          echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> $GITHUB_ENV
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+
+          
+      - name: Compile and build (Ubuntu/Debian/Mac)
+        if: ${{ matrix.target != 'Windows' }}
+        run: |
+          set -ex
+          if ! command -v sudo &> /dev/null; then
+            SUDO=""
+          else
+            SUDO="sudo"
+          fi
+
+          if [ "${{ matrix.flavour }}" == "debian" ]; then
+            $SUDO apt-get update
+            $SUDO apt-get install -y build-essential libev-dev make libc6-dev rubygems zlib1g-dev
+            [[ "${{ matrix.name }}" == "debian12" ]] && {
+              $SUDO apt-get install -y --ignore-missing python3.11 python3.11-venv python3.11-dev
+              echo "DEPS=libpython3.11-libs" >> $GITHUB_ENV
+            }
+            [[ "${{ matrix.name }}" == "debian11" ]] && {
+              $SUDO apt-get install -y --ignore-missing python3 python3-venv python3-dev python3-pip
+              echo "DEPS=libpython3-libs" >> $GITHUB_ENV
+            }
+          elif [ "${{ matrix.flavour }}" == "redhat" ]; then
+            if ! command -v dnf &> /dev/null; then
+              echo "Installing dnf..."
+              microdnf install -y dnf
+            fi
+            dnf install -y gcc make libev-devel python3.11-pip python3.11-setuptools python3.11-devel glibc-devel rubygems rpm-build zlib-devel
+            echo "DEPS=python3.11-libs" >> $GITHUB_ENV
+          fi
+          
+          if [ "$PYTHON_CMD" == "" ]; then
+            if command -v python3.11 &> /dev/null; then
+              PYTHON=$(command -v python3.11)
+            elif command -v python3 &> /dev/null; then
+              PYTHON=$(command -v python3)
+            elif command -v python &> /dev/null; then
+              PYTHON=$(command -v python)
+            else
+              echo "Python not found"
+              exit 1
+            fi
+          else
+            PYTHON=$PYTHON_CMD
+          fi
+
+          $PYTHON -m venv venv
+          source venv/bin/activate
+          export PYTHON=$(pwd)/venv/bin/python
+          $PYTHON -m ensurepip
+
+          [ "${{ matrix.flavour }}" == "readht" ] && $PYTHON -m pip install setuptools
+          $PYTHON -m pip install cython
+
+          ./configure
+
+          if command -v gmake &> /dev/null; then
+            MAKE=$(command -v gmake)
+          else
+            MAKE=$(command -v make)
+          fi
+          $MAKE clean
+          £MAKE test
+          $MAKE -j4 PYTHON_CMD=${PYTHON}
+
+      - name: Compile and build (Windows)
+        if: ${{ matrix.target == 'Windows' }}
+        run: |
+          rmdir /s /q "build"
+          make -f Makefile.win build
+        shell: cmd
+
+      - name: Windows package
+        if: ${{ matrix.target == 'Windows' }}
+        run: |
+          make -f Makefile.win package
+          move axonops-cqlsh-installer.exe axonops-cqlsh-installer-%GITHUB_REF_NAME%.exe
+          del /Q axonops-cqlsh.exe
+        shell: cmd
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+
+      - name: Linux/OSX create package
+        if: ${{ matrix.target != 'Windows' }}
+        run: |
+          if [ $(id -u) -gt 0 ]; then
+            gem install --no-document --user fpm
+          else
+            gem install --no-document fpm
+          fi
+          ./package.sh ${VERSION}
+        env:
+          PKG_DEPS: ${{ env.DEPS }}
+
+      - name: Sign the Apple pkg
+        if: ${{ matrix.flavour == 'mac' }}
+        run: |
+          for pkg_name in $(ls -1 *.pkg); do
+            mv $pkg_name Unsigned-CQLSH.pkg
+
+            productsign --sign "Developer ID Installer: AXONOPS Limited (UJ776LUP23)" Unsigned-CQLSH.pkg $pkg_name
+            rm -f Unsigned-CQLSH.pkg
+            xcrun notarytool submit $pkg_name --apple-id $APPLE_ID --team-id $APPLE_TEAM_ID --password $APPLE_APP_SPECIFIC_PASSWORD --wait
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+      - name: Upload Artifacts
+        uses: softprops/action-gh-release@v2
+        if: ${{ github.ref_name != 'develop' }}
+        with:
+          files: |
+            *.zip
+            *.rpm
+            *.deb
+            *.exe
+            *.pkg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+# code language: yaml

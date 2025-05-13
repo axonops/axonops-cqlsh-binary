@@ -52,6 +52,18 @@ test:
 	@echo $(bindir)
 	@echo $(libdir)
 	@echo $(PYTHON_VERSION)
+	@echo $(PYTHON_INCLUDE)
+	@echo $(PYTHON_LIB)
+	@echo $(LIBEV_INCLUDE)
+	@echo $(LIBEV_LIB)
+	@echo $(GETTEXT_INCLUDE)
+	@echo $(GETTEXT_LIB)
+	@echo $(OUTPUT)
+	@echo $(PYTHON_STATIC_LIB)
+	@echo $(PYTHON_STATIC)
+	@echo $(PYTHON_LIB_DYN)
+	@echo $(PYTHON_FULL_VERSION)
+	@echo $(PYTHON_HOME)
 
 install: build ## Install the application
 	install -d $(DESTDIR)$(bindir)
