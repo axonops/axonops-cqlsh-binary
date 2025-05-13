@@ -93,6 +93,12 @@ jobs:
 
           echo "PYTHON_HOME=$(brew --prefix python@3.11)/bin" >> $GITHUB_ENV
           echo "PYTHON_CMD=$(brew --prefix python@3.11)/bin/python3.11" >> $GITHUB_ENV
+
+          export "PYTHON_HOME=$(brew --prefix python@3.11)"
+          find $PYTHON_HOME -name "libpython*.a"
+          find $PYTHON_HOME -name "Python"
+
+          exit 1
           
 
       - name: Decode and import Apple certificate
