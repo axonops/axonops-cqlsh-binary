@@ -211,7 +211,7 @@ jobs:
 
           if [ "${{ matrix.flavour }}" == "debian" ]; then
             $SUDO apt-get update
-            $SUDO apt-get install -y build-essential libev-dev make libc6-dev rubygems
+            $SUDO apt-get install -y build-essential libev-dev make libc6-dev rubygems zlib1g-dev
             [[ "${{ matrix.name }}" == "debian12" ]] && {
               $SUDO apt-get install -y --ignore-missing python3.11 python3.11-venv python3.11-dev
               echo "DEPS=libpython3.11-libs" >> $GITHUB_ENV
@@ -225,7 +225,7 @@ jobs:
               echo "Installing dnf..."
               microdnf install -y dnf
             fi
-            dnf install -y gcc make libev-devel python3.11-pip python3.11-setuptools python3.11-devel glibc-devel rubygems rpm-build
+            dnf install -y gcc make libev-devel python3.11-pip python3.11-setuptools python3.11-devel glibc-devel rubygems rpm-build zlib-devel
             echo "DEPS=python3.11-libs" >> $GITHUB_ENV
           fi
           
@@ -259,11 +259,13 @@ jobs:
           else
             MAKE=$(command -v make)
           fi
+          $MAKE clean
           $MAKE -j4 PYTHON_CMD=${PYTHON}
 
       - name: Compile and build (Windows)
         if: ${{ matrix.target == 'Windows' }}
         run: |
+          rmdir /s /q "build"
           make -f Makefile.win build
         shell: cmd
 

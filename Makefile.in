@@ -26,8 +26,9 @@ libdir = @libdir@
 # Compiler flags from configure
 CFLAGS = @CFLAGS@ -DLIB_DIR=\"$(libdir)\" -fPIC -O2 -Wall
 CPPFLAGS = @CPPFLAGS@ -I$(PYTHON_INCLUDE) -I$(LIBEV_INCLUDE) -I$(GETTEXT_INCLUDE)
-LDFLAGS = @LDFLAGS@ -L$(LIBEV_LIB) -L$(GETTEXT_LIB) -l$(PYTHON_LIB) -lev
+LDFLAGS = @LDFLAGS@ -L$(LIBEV_LIB) -L$(GETTEXT_LIB) -l$(PYTHON_LIB) -lev -lz
 
+# for Mac, we compile statically
 ifneq ($(OS),Windows_NT)
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S),Darwin)
@@ -45,7 +46,6 @@ build: build_ext ## Build the application
 	@gcc $(CFLAGS) $(CPPFLAGS) \
 	main_wrapper.c $(shell cat sources.txt) \
 	$(LDFLAGS) \
-	-lz -lm -ldl -liconv \
 	-o $(OUTPUT)
 
 test:
@@ -53,12 +53,6 @@ test:
 	@echo $(bindir)
 	@echo $(libdir)
 	@echo $(PYTHON_VERSION)
-
-# static: build_ext ## Build the application statically
-# 	@gcc $(CFLAGS) $(CPPFLAGS) -static \
-# 	main_wrapper.c $(shell cat sources.txt) \
-# 	$(LDFLAGS) -Wl,--whole-archive -l:libpython3.11.a -l:libev.a -l:libz.a -Wl,--no-whole-archive \
-# 	-o $(OUTPUT)
 
 install: build ## Install the application
 	install -d $(DESTDIR)$(bindir)
