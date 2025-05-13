@@ -166,11 +166,25 @@ jobs:
 
           # make is returning an error on macos-13 so it needs to be installed separeteley 
           brew install -v make
-          brew install python@3.11 gcc libev
+          brew install gcc libev gettext
 
-          echo "PYTHON_HOME=$(brew --prefix python@3.11)/bin" >> $GITHUB_ENV
-          echo "PYTHON_CMD=$(brew --prefix python@3.11)/bin/python3.11" >> $GITHUB_ENV
-          
+      - name: Try to figure out Python variables in Mac
+        if: ${{ matrix.flavour == 'mac' }}
+        run: |
+          set -x
+          export PYTHON_CMD=$(command -v python3.11)
+          export PYTHON_VERSION=$(python3.11 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+          export PYTHON_HOME=/Library/Frameworks/Python.framework/Versions/3.11
+
+          PYTHON_STATIC_LIB=$(find $PYTHON_HOME -name "libpython*.a")
+          PYTHON_STATIC=/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Python
+
+          echo "BREWERY_HOME=$(brew --prefix)" >> $GITHUB_ENV
+          echo "PYTHON_CMD=$PYTHON_CMD" >> $GITHUB_ENV
+          echo "PYTHON_VERSION=$PYTHON_VERSION" >> $GITHUB_ENV
+          echo "PYTHON_HOME=$PYTHON_HOME" >> $GITHUB_ENV
+          echo "PYTHON_STATIC_LIB=$PYTHON_STATIC_LIB" >> $GITHUB_ENV
+          echo "PYTHON_STATIC=$PYTHON_STATIC" >> $GITHUB_ENV
 
       - name: Decode and import Apple certificate
         if: ${{ matrix.flavour == 'mac' }}
@@ -260,6 +274,7 @@ jobs:
             MAKE=$(command -v make)
           fi
           $MAKE clean
+          $MAKE test
           $MAKE -j4 PYTHON_CMD=${PYTHON}
 
       - name: Compile and build (Windows)

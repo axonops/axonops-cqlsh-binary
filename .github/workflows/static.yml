@@ -88,7 +88,8 @@ jobs:
 
           # make is returning an error on macos-13 so it needs to be installed separeteley 
           brew install -v make
-          brew install gcc libev
+          brew reinstall gettext
+          brew install gcc libev 
 
       - name: Try to figure out Python variables in Mac
         if: ${{ matrix.flavour == 'mac' }}
