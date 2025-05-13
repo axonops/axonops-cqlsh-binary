@@ -183,7 +183,7 @@ jobs:
             MAKE=$(command -v make)
           fi
           $MAKE clean
-          £MAKE test
+          $MAKE test
           $MAKE -j4 PYTHON_CMD=${PYTHON}
 
       - name: Compile and build (Windows)
