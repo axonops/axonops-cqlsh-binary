@@ -61,7 +61,15 @@ if [ "$(uname -s)" == "Darwin" ]; then
 
   rm -f axonops-cqlsh*.pkg UNSIGNED-axonops-cqlsh*pkg
 
-  cp -a /Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/*
+  rsync -auvz \
+  --exclude '__pycache__' \
+  --exclude '*.pyc' \
+  --exclude '*.swp' \
+  --exclude '*~' \
+  --exclude '*.bak' \
+  /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/* \
+  build/$LIB_DIR/
+
   cp -a "${PYTHON_STATIC_LIB}" build/$LIB_DIR/libpython.dylib
   lib_intl=$(otool -L ${PYTHON_STATIC_LIB} | grep libint | awk '{print $1}')
   cp -a "${lib_intl}" build/$LIB_DIR/libintl.8.dylib
