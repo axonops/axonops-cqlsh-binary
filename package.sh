@@ -61,12 +61,13 @@ if [ "$(uname -s)" == "Darwin" ]; then
 
   rm -f axonops-cqlsh*.pkg UNSIGNED-axonops-cqlsh*pkg
 
-  rsync -auvz \
+  rsync -auz \
   --exclude '__pycache__' \
   --exclude '*.pyc' \
   --exclude '*.swp' \
   --exclude '*~' \
   --exclude '*.bak' \
+  --exclude '*.o' \
   /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/* \
   build/$LIB_DIR/
 
@@ -81,7 +82,7 @@ if [ "$(uname -s)" == "Darwin" ]; then
   codesign --force --options runtime \
     -s "Developer ID Application: AXONOPS Limited (UJ776LUP23)" axonops-cqlsh
 
-  for f in $(find . -type f \( -name "*.a" -o -name "*.so" -o -name "*.dylib" \)); do
+  for f in $(find . -type f \( -name "*.a" -o -name "*.so" -o -name "*.dylib" -o -name "*.o" \)); do
       codesign --force --options runtime \
         -s "Developer ID Application: AXONOPS Limited (UJ776LUP23)" "$f"
   done
