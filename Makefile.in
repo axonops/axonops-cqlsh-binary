@@ -35,7 +35,9 @@ ifneq ($(OS),Windows_NT)
 		BREWERY_HOME := $(shell brew --prefix)
 		LDFLAGS := -Wl,-all_load -Wl,-search_paths_first -Wl,-dead_strip \
 			$(PYTHON_STATIC_LIB) \
-			$(BREWERY_HOME)/opt/gettext/lib/libintl.a
+			$(BREWERY_HOME)/opt/gettext/lib/libintl.a \
+			$(BREWERY_HOME)/opt/zlib/lib/libz.a \
+			-lz
 	endif
 endif
 

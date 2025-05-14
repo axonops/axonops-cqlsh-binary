@@ -39,7 +39,7 @@ def get_cython_extension_path():
     cqlshHome = [
             os.getenv('CQLSH_HOME'),
             '/opt/AxonOps',
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'),
+            '/usr/local/AxonOps',
             f"~/homebrew/Cellar/axonops-cqlsh/{version}",
             f"/opt/homebrew/Cellar/axonops-cqlsh/{version}"
     ]
@@ -75,9 +75,8 @@ CASSANDRA_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
 
 # Get the absolute path to the build directory
 ext_path = get_cython_extension_path()
-# if ext_path is None and not platform.system() == 'Windows':
-#     print("Cannot find the cqlsh libraries. Please set the CQLSH_HOME environment variable")
-#     sys.exit(1)
+if ext_path is None:
+    ext_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../lib'),
 
 if ext_path not in sys.path:
     sys.path.insert(0, ext_path)

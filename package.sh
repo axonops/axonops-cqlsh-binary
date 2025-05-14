@@ -61,12 +61,15 @@ if [ "$(uname -s)" == "Darwin" ]; then
 
   rm -f axonops-cqlsh*.pkg UNSIGNED-axonops-cqlsh*pkg
 
-  cp -a "${PYTHON_STATIC_LIB}" build/$LIB_DIR/libpython.a
+  cp -a /Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/*
+  cp -a "${PYTHON_STATIC_LIB}" build/$LIB_DIR/libpython.dylib
   lib_intl=$(otool -L ${PYTHON_STATIC_LIB} | grep libint | awk '{print $1}')
   cp -a "${lib_intl}" build/$LIB_DIR/libintl.8.dylib
 
-  install_name_tool -change "${PYTHON_STATIC_LIB}" /usr/local/lib/libpython.a axonops-cqlsh
+
+  install_name_tool -change "${PYTHON_STATIC_LIB}" /usr/local/lib/libpython.dylib axonops-cqlsh
   install_name_tool -change "${lib_intl}" /usr/local/lib/libintl.8.dylib axonops-cqlsh
+  install_name_tool -change "${lib_intl}" /usr/local/lib/libintl.8.dylib build/$LIB_DIR/libpython.dylib
 
   codesign --force --options runtime \
     -s "Developer ID Application: AXONOPS Limited (UJ776LUP23)" axonops-cqlsh
