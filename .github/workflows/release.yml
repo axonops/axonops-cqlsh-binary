@@ -166,7 +166,7 @@ jobs:
 
           # make is returning an error on macos-13 so it needs to be installed separeteley 
           brew install -v make
-          brew reinstall libev gettext dylibbundler
+          brew reinstall libev gettext dylibbundler zlib
           brew reinstall gcc
 
       - name: Try to figure out Python variables in Mac
