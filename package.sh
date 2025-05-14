@@ -72,8 +72,7 @@ if [ "$(uname -s)" == "Darwin" ]; then
 
   cp -a "${PYTHON_STATIC_LIB}" build/$LIB_DIR/libpython.dylib
   lib_intl=$(otool -L ${PYTHON_STATIC_LIB} | grep libint | awk '{print $1}')
-  cp -a "${lib_intl}" build/$LIB_DIR/libintl.8.dylib
-
+  [ -n "${lib_intl}" ] && [ -f "${lib_intl}" ] && cp -a "${lib_intl}" build/$LIB_DIR/libintl.8.dylib
 
   install_name_tool -change "${PYTHON_STATIC_LIB}" /usr/local/lib/libpython.dylib axonops-cqlsh
   install_name_tool -change "${lib_intl}" /usr/local/lib/libintl.8.dylib axonops-cqlsh
