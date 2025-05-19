@@ -51,6 +51,7 @@ if [ "$(uname -s)" == "Darwin" ]; then
   MAJOR_VERSION=$(sw_vers -productVersion | cut -d '.' -f 1)
   LIB_DIR=$(ls -1 build/ | grep lib.)
   PKG_VERSION=${PKG_VERSION}~osx${MAJOR_VERSION}
+  INSTALL_DIR=/usr/local/AxonOps
 
   fpm -s dir -t zip -n axonops-cqlsh-${PKG_VERSION}-${ARCH} -v ${PKG_VERSION} -a $ARCH \
     --maintainer "AxonOps Limited <support@axonops.com>" \
@@ -75,9 +76,9 @@ if [ "$(uname -s)" == "Darwin" ]; then
   lib_intl=$(otool -L ${PYTHON_STATIC_LIB} | grep libint | awk '{print $1}')
   [ -n "${lib_intl}" ] && [ -f "${lib_intl}" ] && cp -a "${lib_intl}" build/$LIB_DIR/libintl.8.dylib
 
-  install_name_tool -change "${PYTHON_STATIC_LIB}" /usr/local/lib/libpython.dylib axonops-cqlsh
-  install_name_tool -change "${lib_intl}" /usr/local/lib/libintl.8.dylib axonops-cqlsh
-  install_name_tool -change "${lib_intl}" /usr/local/lib/libintl.8.dylib build/$LIB_DIR/libpython.dylib
+  install_name_tool -change "${PYTHON_STATIC_LIB}" ${INSTALL_DIR}/lib/libpython.dylib axonops-cqlsh
+  install_name_tool -change "${lib_intl}" ${INSTALL_DIR}/lib/libintl.8.dylib axonops-cqlsh
+  install_name_tool -change "${lib_intl}" ${INSTALL_DIR}/lib/libintl.8.dylib build/$LIB_DIR/libpython.dylib
 
   codesign --force --options runtime \
     -s "Developer ID Application: AXONOPS Limited (UJ776LUP23)" axonops-cqlsh
@@ -91,6 +92,6 @@ if [ "$(uname -s)" == "Darwin" ]; then
     --maintainer "AxonOps Limited <support@axonops.com>" \
     --osxpkg-identifier-prefix "com.axonops.cqlsh" \
     --description "CQL Shell for interacting with Apache Cassandra" \
-    axonops-cqlsh=/usr/local/bin/axonops-cqlsh \
-    build/${LIB_DIR}/=/usr/local/lib
+    axonops-cqlsh=${INSTALL_DIR}/bin/axonops-cqlsh \
+    build/${LIB_DIR}/=${INSTALL_DIR}/lib
 fi

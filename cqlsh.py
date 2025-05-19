@@ -18,22 +18,17 @@
 
 import os
 import sys
-import platform
-from glob import glob
-try:
-    import encodings.idna
-except ImportError:
-    pass
 
-version = '0.0.4'
+version = os.getenv('VERSION', '0.0.4')
 
 CQLSH_DEBUG = os.getenv('CQLSH_DEBUG')
 
 def get_cython_extension_path():
     # first, build directory
-    lib_dir = glob('build/lib.*')
-    if len(lib_dir) > 0:
-        return lib_dir[0]
+    if os.path.exists('build'):
+        for lib_dir in os.listdir('build'):
+            if lib_dir.startswith('lib.'):
+                return os.path.join('build', lib_dir)
 
     # possible homes
     cqlshHome = [
@@ -45,7 +40,7 @@ def get_cython_extension_path():
     ]
 
     # Add Windows-specific paths
-    if platform.system() == 'Windows':
+    if 'win' in sys.platform:
         cqlshHome.append("C:\\Program Files (x86)\\AxonOps\\Lib")
         cqlshHome.append(f"C:\\Program Files (x86)\\AxonOps")
         cqlshHome.append(f"C:\\AxonOps\\cqlsh")
@@ -68,23 +63,20 @@ def get_cython_extension_path():
 
     return None
 
-CQL_LIB_PREFIX = 'cassandra-driver-internal-only-'
-
 CASSANDRA_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
-
 
 # Get the absolute path to the build directory
 ext_path = get_cython_extension_path()
 if ext_path is None:
-    ext_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../lib'),
+    ext_path = os.path.join(CASSANDRA_PATH, '../lib'),
 
 if ext_path not in sys.path:
     sys.path.insert(0, ext_path)
 
-
 if CQLSH_DEBUG:
     print(f"DEBUG: CQLSH_HOME: {os.getenv('CQLSH_HOME')}")
     print(f"DEBUG: CASSANDRA_PATH: {CASSANDRA_PATH}")
+
     print(f"DEBUG: ext_path: {ext_path}")
     print(f"DEBUG: sys.path: {sys.path}")
 

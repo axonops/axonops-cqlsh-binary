@@ -166,7 +166,7 @@ jobs:
 
           # make is returning an error on macos-13 so it needs to be installed separeteley 
           brew install -v make
-          brew reinstall libev gettext dylibbundler zlib
+          brew reinstall libev gettext zlib
           brew reinstall gcc
 
       - name: Try to figure out Python variables in Mac
@@ -265,7 +265,7 @@ jobs:
           $PYTHON -m ensurepip
 
           [ "${{ matrix.flavour }}" == "redhat" ] && $PYTHON -m pip install setuptools
-          $PYTHON -m pip install cython
+          $PYTHON -m pip install cython cx_freeze
 
           ./configure
           

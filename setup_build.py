@@ -77,7 +77,7 @@ setup(
     packages=find_packages(where='.'),
     cmdclass={'build_ext': build_ext},
     script_args=['build_ext'],
-    py_modules=['cassandra', 'cqlshlib', 'wcwidth', 'encodings'],
+    py_modules=['cassandra', 'cqlshlib', 'wcwidth', 'encodings', 'platform'],
     # Additional metadata
     author="AxonOps Limited",
     author_email="support@axonops.com",
